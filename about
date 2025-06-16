@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About QuantumFlow Analyzer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Specific styles for the about page if needed, otherwise rely on general styles */
+        .about-container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 40px;
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-deep);
+            animation: fadeIn 0.8s forwards;
+        }
+        .about-title {
+            font-family: var(--font-family-title);
+            font-size: 3rem;
+            color: var(--color-border-accent-gold);
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: var(--glow-gold);
+        }
+        .about-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--color-border-subtle);
+        }
+        .about-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .about-section h3 {
+            font-family: var(--font-family-body);
+            font-size: 1.5rem;
+            color: var(--color-text-light);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .about-section p, .about-section ul {
+            font-size: 1rem;
+            color: var(--color-text-medium);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        .about-section ul {
+            list-style-type: disc;
+            margin-left: 25px;
+        }
+        .about-section ul li {
+            margin-bottom: 5px;
+        }
+        .about-footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: var(--color-text-dark);
+            font-style: italic;
+        }
+        .about-footer a {
+            color: var(--color-accent-blue);
+            text-decoration: none;
+        }
+        .about-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="theme-dark-elegant">
+    <div class="about-container">
+        <h1 class="about-title"><i class="fas fa-info-circle"></i> About QuantumFlow Analyzer</h1>
+
+        <div class="about-section">
+            <h3><i class="fas fa-question-circle"></i> What is QuantumFlow Analyzer?</h3>
+            <p>QuantumFlow Analyzer is an elegant, intuitive tool designed to help traders and analysts assess market sentiment and trade flow. It allows you to quickly quantify buying and selling pressure, derive key insights, and log your trading decisions in a structured journal.</p>
+        </div>
+
+        <div class="about-section">
+            <h3><i class="fas fa-play-circle"></i> How to Use This Tool</h3>
+            <p>The QuantumFlow Analyzer operates on a simple, iterative process:</p>
+            <ol>
+                <li><strong>Record Trade Flow:</strong> In the "Trade Flow Input" section, use the `+0.5` buttons to increment pending buys or sells based on your market observations (e.g., volume spikes, candlestick patterns, order book changes). You can also directly type in values into the input fields. Use the `-0.5` buttons to correct entries.</li>
+                <li><strong>Submit for Analysis:</strong> Once you've recorded your current observations, click the "Submit Flow" button. This action adds your pending values to the total counts and triggers a comprehensive market sentiment analysis. You will see the "Market Sentiment" section update prominently.</li>
+                <li><strong>Analyze Sentiment:</strong> The "Market Sentiment" section displays total buys, total sells, their difference, and a percentage influence. A conclusion (e.g., "STRONG BUY," "SELL RETRACEMENT EXPECTED") and a colored sentiment badge provide immediate insights.</li>
+                <li><strong>Review Recent Flows:</strong> The "Recent Flows" section keeps a history of your past 30 submitted analyses for quick review.</li>
+                <li><strong>Detailed Notes & Parameters:</strong> Click the header for "Notes & Parameters & Journal" to expand this section. Here, you can:
+                    <ul>
+                        <li><strong>Add Notes:</strong> Each submitted entry in "Detailed Entry History Notes" allows you to add a custom title and detailed notes about your observations or trading rationale.</li>
+                        <li><strong>Search Notes:</strong> Use the search bar to quickly find specific entries by title or content.</li>
+                        <li><strong>Manage Parameters:</strong> View and add your own custom trading parameters. These are qualitative or quantitative factors you consider in your analysis.</li>
+                    </ul>
+                </li>
+                <li><strong>Log Trades:</strong> Within the expanded "Notes & Parameters & Journal" section, use the "Log New Trade" form to record details of your actual trades (Instrument, Entry/Exit Price, P/L, Date, and Notes). This acts as your personal trading journal.</li>
+                <li><strong>Clear Data:</strong> Use the "Reset Flow" button to clear current pending values. The "Clear All Data" button (top right) will erase all saved data (total counts, history, journal, parameters) from your browser's local storage.</li>
+            </ol>
+        </div>
+
+        <div class="about-section">
+            <h3><i class="fas fa-chart-line"></i> Understanding Strategies & Interpretation</h3>
+            <p>This tool is designed to be flexible and support various trading strategies that rely on identifying buying and selling pressure. Some common approaches include:</p>
+            <ul>
+                <li><strong>Volume Profile Analysis:</strong> Quantify strong buying/selling volumes at key price levels.</li>
+                <li><strong>Order Flow Analysis:</strong> Interpret imbalances in buy/sell orders.</li>
+                <li><strong>Candlestick Pattern Confirmation:</strong> Use the tool to confirm the strength of bullish (buy) or bearish (sell) candlestick patterns.</li>
+                <li><strong>Support & Resistance Levels:</strong> Track flow at critical S/R levels to gauge their holding strength.</li>
+            </ul>
+            <p><strong>Interpretation of Sentiment:</strong></p>
+            <ul>
+                <li><strong>STRONG BUY/SELL:</strong> Indicates a clear dominance of one side, often suggesting continuation.</li>
+                <li><strong>NORMAL BUY/SELL:</strong> A moderate dominance, common during trending phases.</li>
+                <li><strong>RETRACEMENT EXPECTED:</strong> When percentage difference is low (≤25%), it suggests a relatively balanced market, where a counter-trend move might be imminent. For example, "BUY RETRACEMENT EXPECTED" means buys are slightly more but not overwhelmingly so, suggesting bears might try to push back.</li>
+                <li><strong>BOTH ARE EQUAL:</strong> A perfectly balanced market, often indicating consolidation or indecision.</li>
+            </ul>
+            <p>The "Influence %" shows how much one side dominates the total flow. Higher percentages indicate stronger sentiment.</p>
+        </div>
+
+        <div class="about-section">
+            <h3><i class="fas fa-code"></i> Technology & Extendability</h3>
+            <p>QuantumFlow Analyzer is built using standard web technologies:</p>
+            <ul>
+                <li><strong>HTML5:</strong> For semantic structure.</li>
+                <li><strong>CSS3:</strong> For elegant styling, including advanced features like custom properties (variables) and animations. In a larger project, you might use a preprocessor like <strong>Sass (SCSS)</strong> to write more organized and maintainable CSS, which then compiles down to standard CSS.</li>
+                <li><strong>JavaScript (ES6+):</strong> For all interactive elements, data logic, and client-side storage.</li>
+            </ul>
+            <p><strong>Regarding Dynamic Data (e.g., Live News):</strong> While the current news feed is static for demonstration, integrating real-time market news from external sources would typically require a **backend server** (e.g., written in Python with Flask/Django, or Node.js with Express) to handle API requests and bypass browser security limitations (CORS). This setup would then interact with a **database** (SQL like PostgreSQL, or NoSQL like MongoDB) to store user data or historical market feeds.</p>
+            <p>This project is designed for easy local hosting and demonstration via GitHub Pages. For advanced features requiring persistent data or external API calls, a backend server would be the next step in its evolution.</p>
+        </div>
+
+        <div class="about-footer">
+            <p>Codeveloped by <span style="font-weight: 600; color: var(--color-text-light);">Surya Dev</span> and <span style="font-weight: 600; color: var(--color-text-light);">Amogh Kris</span></p>
+            <p>Designed with a passion for elegant, intuitive trading tools. <a href="index.html">Back to Analyzer</a></p>
+        </div>
+    </div>
+</body>
+</html>

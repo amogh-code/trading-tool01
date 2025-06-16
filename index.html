@@ -4,13 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QuantumFlow Analyzer</title>
+    <!-- Google Fonts: Cormorant Garamond (titles) and Inter (body text) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS Styles -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="theme-dark-elegant">
+    <!-- Global Stock Ticker at the very top -->
     <div class="stock-ticker-wrapper">
         <div class="stock-ticker-content" id="stock-ticker-content">
+            <!-- Ticker items for scrolling news/data simulation -->
             <span class="ticker-item">USD/INR: 83.52 <span class="text-green-plus">(+0.12)</span></span>
             <span class="ticker-item">NIFTY 50: 23,567.80 <span class="text-green-plus">(+0.45%)</span></span>
             <span class="ticker-item">GOLD: $2,332.50 <span class="text-red-minus">(-0.10%)</span></span>
@@ -22,6 +27,7 @@
             <span class="ticker-item">Nasdaq: 17,900.10 <span class="text-green-plus">(+0.65%)</span></span>
             <span class="ticker-item">BITCOIN: $64,500 <span class="text-green-plus">(+1.2%)</span></span>
             <span class="ticker-item">Ethereum: $3,500 <span class="text-green-plus">(+0.8%)</span></span>
+            <!-- Duplicated content to ensure smooth, continuous looping -->
             <span class="ticker-item">USD/INR: 83.52 <span class="text-green-plus">(+0.12)</span></span>
             <span class="ticker-item">NIFTY 50: 23,567.80 <span class="text-green-plus">(+0.45%)</span></span>
             <span class="ticker-item">GOLD: $2,332.50 <span class="text-red-minus">(-0.10%)</span></span>
@@ -36,7 +42,9 @@
         </div>
     </div>
 
-    <div class="app-wrapper"> <div class="app-container">
+    <div class="app-wrapper"> <!-- Overall container for the main application and the news panel -->
+        <div class="app-container">
+            <!-- Header Section: Contains title, subtitle, clocks, and global action buttons -->
             <header class="app-header">
                 <div class="app-title-wrapper">
                     <h1 class="app-title">QuantumFlow Analyzer</h1>
@@ -44,7 +52,8 @@
                 </div>
                 <div class="header-right">
                     <div class="time-info" id="timezone-clocks">
-                        </div>
+                        <!-- Timezone clocks will be dynamically inserted here by JavaScript -->
+                    </div>
                     <div class="live-clock" id="live-clock"></div>
                     <a href="about.html" class="btn btn-icon btn-about" title="About This Tool">
                         <i class="fas fa-question-circle"></i>
@@ -55,23 +64,27 @@
                 </div>
             </header>
 
+            <!-- Main Content Area: Divided into a grid for core functionalities -->
             <main class="main-content-grid">
+                <!-- Trade Actions Section: For inputting buy/sell flow data -->
                 <section class="section-card trade-actions-section">
                     <h2 class="section-title"><i class="fas fa-chart-line"></i> Trade Flow Input</h2>
                     <div class="input-grid">
+                        <!-- Buy Flow Input Group -->
                         <div class="input-group">
                             <label for="buy-input" class="input-label"><i class="fas fa-long-arrow-alt-up text-accent-green"></i> Current Buy Flow:</label>
                             <div class="input-controls">
                                 <button class="btn-control btn-deduct" data-action="buy" data-change="-0.5" data-direction="down">-0.5</button>
-                                <input type="number" id="buy-input" class="value-input" value="0" step="0.5">
+                                <input type="number" id="buy-input" class="value-input" value="0" step="0.5" min="0">
                                 <button class="btn-control btn-increment" data-action="buy" data-change="0.5" data-direction="up">+0.5</button>
                             </div>
                         </div>
+                        <!-- FIX: Sell Flow Input Group - Restored and Verified -->
                         <div class="input-group">
                             <label for="sell-input" class="input-label"><i class="fas fa-long-arrow-alt-down text-accent-red"></i> Current Sell Flow:</label>
                             <div class="input-controls">
                                 <button class="btn-control btn-deduct" data-action="sell" data-change="-0.5" data-direction="down">-0.5</button>
-                                <input type="number" id="sell-input" class="value-input" value="0" step="0.5">
+                                <input type="number" id="sell-input" class="value-input" value="0" step="0.5" min="0">
                                 <button class="btn-control btn-increment" data-action="sell" data-change="0.5" data-direction="up">+0.5</button>
                             </div>
                         </div>
@@ -99,6 +112,7 @@
                     </div>
                 </section>
 
+                <!-- Market Sentiment Section: Displays analysis results -->
                 <section class="section-card market-sentiment-section">
                     <h2 class="section-title"><i class="fas fa-chart-pie"></i> Market Sentiment</h2>
                     <div class="analysis-grid">
@@ -125,6 +139,7 @@
                     </div>
                 </section>
 
+                <!-- Recent Flows Section: History of submitted analyses -->
                 <section class="section-card recent-flows-section">
                     <h2 class="section-title"><i class="fas fa-history"></i> Recent Flows <span class="text-xs text-text-dark">(Last 30)</span></h2>
                     <div id="history" class="history-list scrollable-content">
@@ -132,27 +147,32 @@
                     </div>
                 </section>
 
+                <!-- Collapsible Panel Section: Contains Notes, Parameters, and Journal features -->
                 <section class="section-card collapsible-panel-container">
                     <div class="collapsible-header" id="toggleNotesParamsBtn">
                         <h2 class="section-title flex-grow"><i class="fas fa-clipboard-list"></i> Notes & Parameters & Journal</h2>
                         <i class="fas fa-chevron-down toggle-icon"></i>
                     </div>
                     <div class="collapsible-content collapsed" id="notes-params-content">
+                        <!-- Detailed Entry History Notes Sub-section -->
                         <h3 class="subsection-title"><i class="fas fa-marker"></i> Detailed Entry History Notes</h3>
                         <input type="text" id="note-search" class="text-input search-input" placeholder="Search notes by title or content...">
                         <div id="historyWithNotes" class="history-detail-list scrollable-content">
                             <p class="text-center text-text-dark py-4">No detailed entries yet.</p>
                         </div>
 
+                        <!-- Custom Trading Parameters Sub-section -->
                         <h3 class="subsection-title mt-8"><i class="fas fa-sliders-h"></i> Custom Trading Parameters</h3>
                         <div id="parameter-grid" class="parameter-grid">
-                            </div>
+                            <!-- Parameters will be dynamically loaded here by JavaScript -->
+                        </div>
                         <div class="parameter-add">
                             <input type="text" id="new-param-label" class="text-input" placeholder="New Parameter Label (e.g., 'Risk Factor')">
                             <input type="number" id="new-param-value" class="text-input" value="1.0" step="0.1">
                             <button class="btn btn-secondary" id="addParameterBtn"><i class="fas fa-plus-circle"></i> Add Parameter</button>
                         </div>
 
+                        <!-- Trading Journal Form Sub-section -->
                         <h3 class="subsection-title mt-8"><i class="fas fa-pen-nib"></i> Log New Trade</h3>
                         <div class="journal-form">
                             <div class="form-group">
@@ -189,6 +209,7 @@
                             </div>
                         </div>
 
+                        <!-- Logged Trades History Sub-section -->
                         <h3 class="subsection-title mt-8"><i class="fas fa-scroll"></i> Logged Trades History</h3>
                         <div class="journal-controls">
                             <button class="btn btn-secondary" id="clearJournalBtn"><i class="fas fa-trash-alt"></i> Clear All Journal Entries</button>
@@ -201,6 +222,7 @@
             </main>
         </div>
 
+        <!-- News/Market Insights Panel: A static placeholder for news content -->
         <aside class="news-panel">
             <h3 class="news-panel-title"><i class="fas fa-bullhorn"></i> Market Insights</h3>
             <div class="news-content scrollable-content" id="news-feed">
@@ -235,6 +257,7 @@
         </aside>
     </div>
 
+    <!-- Main JavaScript File -->
     <script src="js/script.js"></script>
 </body>
 </html>

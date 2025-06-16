@@ -15,14 +15,13 @@
     --color-border-accent-bronze: #CD7F32; /* Bronze for elements */
     --color-border-ticker: #A08040; /* Darker bronze for ticker border */
 
-
     /* Text Colors */
     --color-text-light: #F0F5F9;   /* Primary text, soft white */
     --color-text-medium: #C0C8D4;  /* Secondary text, light blue-grey */
     --color-text-dark: #8C99A8;    /* Muted text, slate grey */
     --color-text-placeholder: #6A8095; /* Placeholder text */
-    --color-text-green-plus: #2ECC71; /* Green for positive values */
-    --color-text-red-minus: #E74C3C;  /* Red for negative values */
+    --color-text-green-plus: #2ECC71; /* Green for positive values (ticker) */
+    --color-text-red-minus: #E74C3C;  /* Red for negative values (ticker) */
 
     /* Accents (Stock Market inspired - professional tones) */
     --color-accent-green: #2ECC71; /* Emerald Green (Buy) */
@@ -61,134 +60,128 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Enhanced animation for the analysis conclusion area */
+/* Animation for the analysis conclusion area upon update */
 @keyframes resultHighlight {
     0% { background-color: transparent; box-shadow: none; }
-    20% { background-color: rgba(var(--color-border-accent-gold), 0.08); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
-    80% { background-color: rgba(var(--color-border-accent-gold), 0.08); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+    20% { background-color: rgba(212, 175, 55, 0.08); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); } /* Use RGB values from --color-border-accent-gold */
+    80% { background-color: rgba(212, 175, 55, 0.08); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
     100% { background-color: transparent; box-shadow: none; }
-}
-.analysis-conclusion.highlight {
-    animation: resultHighlight 1.5s ease-out; /* Apply this animation */
 }
 
 /* Stock Ticker Animation */
 @keyframes tickerScroll {
     0% { transform: translateX(0%); }
-    100% { transform: translateX(-50%); } /* Half the content width for seamless loop */
+    100% { transform: translateX(-50%); } /* Scrolls exactly half the content width for seamless loop */
 }
 
 
 /* --- Global Styles --- */
 body {
-    margin: 0; /* Ensure no default body margin to fit ticker */
-    padding: 0; /* Ensure no default body padding */
+    margin: 0; /* Ensures no default margin around the body */
+    padding: 0; /* Ensures no default padding around the body */
     font-family: var(--font-family-body);
     color: var(--color-text-light);
     min-height: 100vh;
     display: flex;
-    flex-direction: column; /* Allow ticker to be on top */
-    justify-content: center;
+    flex-direction: column; /* Stacks ticker above the app-wrapper */
+    justify-content: flex-start; /* Aligns content to the top */
     align-items: center;
     background: linear-gradient(135deg, var(--color-bg-darkest) 0%, var(--color-bg-primary) 100%);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden; /* Prevent horizontal scroll from ticker */
+    overflow-x: hidden; /* Prevents horizontal scrollbar due to ticker animation */
 }
 
-/* --- Stock Ticker --- */
+/* --- Stock Ticker Styling --- */
 .stock-ticker-wrapper {
     width: 100%;
     background-color: var(--color-bg-tertiary);
     border-bottom: 2px solid var(--color-border-ticker);
-    overflow: hidden; /* Hide content outside the ticker */
+    overflow: hidden; /* Hides content outside the visible ticker area */
     padding: 8px 0;
     font-family: var(--font-family-mono);
     font-size: 0.95rem;
     color: var(--color-text-light);
-    white-space: nowrap; /* Keep all content on one line */
+    white-space: nowrap; /* Ensures all ticker items stay on one line */
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
     position: relative;
-    z-index: 100; /* Ensure it's on top */
+    z-index: 100; /* Ensures the ticker is on top of other content */
 }
 
 .stock-ticker-content {
-    display: inline-block; /* Make content display as a single line */
-    padding-left: 100%; /* Start content off-screen to the right */
-    animation: tickerScroll 45s linear infinite; /* Adjust duration based on content length */
+    display: inline-block; /* Makes the content behave like a single, long line */
+    padding-left: 100%; /* Starts the content completely off-screen to the right */
+    animation: tickerScroll 45s linear infinite; /* Applies the scrolling animation */
 }
 
 .ticker-item {
-    padding: 0 25px; /* Spacing between items */
-    display: inline-block;
+    padding: 0 25px; /* Spacing between individual ticker items */
+    display: inline-block; /* Allows items to sit side-by-side */
     color: var(--color-text-light);
     font-weight: 600;
 }
-.text-green-plus {
-    color: var(--color-text-green-plus);
-}
-.text-red-minus {
-    color: var(--color-text-red-minus);
-}
+/* Specific colors for positive/negative values in the ticker */
+.ticker-item .text-green-plus { color: var(--color-text-green-plus); }
+.ticker-item .text-red-minus { color: var(--color-text-red-minus); }
 
 
-/* --- App Wrapper (for main content + news panel layout) --- */
+/* --- Main Application Wrapper (contains the grid layout and news panel) --- */
 .app-wrapper {
     display: grid;
-    grid-template-columns: 1fr 320px; /* Main content area + wider fixed news panel */
-    gap: 30px; /* Space between main content and news */
+    grid-template-columns: 1fr 320px; /* Main content (left) + fixed news panel (right) */
+    gap: 30px; /* Space between the two main columns */
     width: 100%;
-    max-width: 1600px; /* Increased max-width to accommodate news panel */
-    min-height: calc(100vh - 40px); /* Adjust for ticker height */
-    align-items: flex-start; /* Align content to top */
-    padding: 30px; /* Main padding around the grid */
+    max-width: 1600px; /* Max width of the entire application layout */
+    min-height: calc(100vh - 40px); /* Adjusts height to account for the ticker at the top */
+    align-items: flex-start; /* Aligns content to the top within the grid */
+    padding: 30px; /* Padding around the entire main grid layout */
 }
 
-/* --- Main App Container (Left Column) --- */
+/* --- Main App Container (Left Column, holds core analyzer sections) --- */
 .app-container {
     background: var(--color-bg-primary);
     border: 1px solid var(--color-border-main);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-deep);
-    padding: 35px; /* Increased padding */
+    padding: 35px; /* Generous internal padding */
     display: flex;
     flex-direction: column;
-    gap: 30px; /* Spacing between header, main-content-grid */
+    gap: 30px; /* Space between header and main-content-grid */
     position: relative;
-    overflow: hidden;
+    overflow: hidden; /* Ensures shadows and animations don't bleed out */
 }
 
-/* --- Header --- */
+/* --- Header Section --- */
 .app-header {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Allows items to wrap on smaller screens */
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 25px; /* Increased padding */
+    padding-bottom: 25px;
     margin-bottom: 15px;
     border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .app-title-wrapper {
-    margin-bottom: 15px; /* For wrap on smaller screens */
+    margin-bottom: 15px; /* Provides spacing when wrapping */
 }
 
 .app-title {
     font-family: var(--font-family-title);
-    font-size: 3.8rem; /* Slightly larger */
+    font-size: 3.8rem;
     font-weight: 700;
-    letter-spacing: 0.04em; /* More pronounced letter spacing */
+    letter-spacing: 0.04em;
     color: var(--color-border-accent-gold);
     line-height: 1;
-    text-shadow: var(--glow-gold);
+    text-shadow: var(--glow-gold); /* Gold glow effect */
 }
 
 .app-subtitle {
-    font-size: 1rem; /* Slightly larger */
+    font-size: 1rem;
     color: var(--color-text-dark);
-    letter-spacing: 1.2px; /* More pronounced */
-    margin-top: 10px; /* More space */
+    letter-spacing: 1.2px;
+    margin-top: 10px;
     text-transform: uppercase;
     font-weight: 500;
 }
@@ -196,20 +189,21 @@ body {
 .header-right {
     display: flex;
     align-items: center;
-    gap: 25px; /* More space */
+    gap: 25px; /* Spacing between header elements */
     flex-wrap: wrap;
     justify-content: flex-end;
-    margin-top: 15px; /* For wrap on smaller screens */
+    margin-top: 15px; /* Provides spacing when wrapping */
 }
 
+/* Styling for the timezone display block */
 .time-info {
     display: flex;
-    gap: 18px; /* More space */
+    gap: 18px;
     font-family: var(--font-family-mono);
-    font-size: 0.9rem; /* Slightly larger */
+    font-size: 0.9rem;
     color: var(--color-text-medium);
     background: var(--color-bg-tertiary);
-    padding: 12px 20px; /* Larger padding */
+    padding: 12px 20px;
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border-subtle);
     box-shadow: var(--shadow-inner);
@@ -218,7 +212,7 @@ body {
 .time-zone {
     display: flex;
     align-items: center;
-    gap: 8px; /* More space */
+    gap: 8px;
 }
 
 .time-label {
@@ -229,19 +223,21 @@ body {
     color: var(--color-text-light);
 }
 
+/* Styling for the local live clock */
 .live-clock {
     font-family: var(--font-family-mono);
-    font-size: 1rem; /* Slightly larger */
+    font-size: 1rem;
     color: var(--color-text-light);
     background: var(--color-bg-tertiary);
-    padding: 12px 20px; /* Larger padding */
+    padding: 12px 20px;
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border-subtle);
     box-shadow: var(--shadow-inner);
     font-weight: 600;
 }
 
-.btn-about {
+/* General style for circular icon buttons in the header */
+.btn-icon {
     width: 52px;
     height: 52px;
     padding: 0;
@@ -249,129 +245,135 @@ body {
     font-size: 1.4rem;
     background: var(--color-bg-tertiary);
     border: 1px solid var(--color-border-subtle);
-    color: var(--color-text-medium); /* Muted color for info */
     box-shadow: var(--shadow-subtle);
     transition: all var(--transition-speed);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    text-decoration: none; /* For the About button (anchor tag) */
+}
+.btn-icon:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 18px rgba(0, 0, 0, 0.4);
+}
+
+/* Specific color for About button */
+.btn-about {
+    color: var(--color-text-medium);
 }
 .btn-about:hover {
     color: var(--color-accent-blue);
     border-color: var(--color-accent-blue);
-    box-shadow: 0 0 18px rgba(52, 152, 219, 0.4);
-    transform: translateY(-2px);
+    box-shadow: 0 0 18px rgba(52, 152, 219, 0.4); /* Blue glow */
 }
 
+/* Specific color for Clear All Data button */
 .btn-clear-all {
-    width: 52px; /* Larger */
-    height: 52px; /* Larger */
-    padding: 0;
-    border-radius: 50%;
-    font-size: 1.4rem; /* Larger icon */
-    background: var(--color-bg-tertiary);
-    border: 1px solid var(--color-border-subtle);
     color: var(--color-text-dark);
-    box-shadow: var(--shadow-subtle);
-    transition: all var(--transition-speed);
 }
 .btn-clear-all:hover {
     color: var(--color-accent-red);
     border-color: var(--color-accent-red);
-    box-shadow: 0 0 18px rgba(231, 76, 60, 0.4); /* Stronger red glow */
-    transform: translateY(-2px);
+    box-shadow: 0 0 18px rgba(231, 76, 60, 0.4); /* Red glow */
 }
 
-/* --- Main Content Grid (Central Area) --- */
+/* --- Main Content Grid (Grid for the four main sections) --- */
 .main-content-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Two columns */
-    gap: 30px; /* More space between sections */
+    grid-template-columns: 1fr 1fr; /* Two equal columns */
+    gap: 30px; /* Space between grid items */
 }
 
-/* --- Section Cards (General Styling) --- */
+/* --- General Section Card Styling --- */
 .section-card {
     background: var(--color-bg-secondary);
     border: 1px solid var(--color-border-card);
     border-radius: var(--radius-lg);
-    padding: 30px; /* Increased padding */
+    padding: 30px; /* Internal padding for content */
     box-shadow: var(--shadow-medium);
     transition: transform var(--transition-speed), box-shadow var(--transition-speed), border-color var(--transition-speed);
-    animation: fadeIn 0.8s forwards; /* Initial fade-in animation */
-    position: relative; /* For inner animations */
-    overflow: hidden; /* For inner animations like pulse */
+    animation: fadeIn 0.8s forwards; /* Initial fade-in animation for each card */
+    position: relative;
+    overflow: hidden; /* Ensures inner glows/animations are contained */
 }
 .section-card:hover {
-    transform: translateY(-5px); /* More pronounced lift */
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); /* Deeper shadow */
-    border-color: var(--color-border-accent-gold);
+    transform: translateY(-5px); /* Lifts card slightly on hover */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); /* Deeper shadow on hover */
+    border-color: var(--color-border-accent-gold); /* Gold border on hover */
 }
 
+/* Styling for titles within sections */
 .section-title {
     font-family: var(--font-family-title);
-    font-size: 2rem; /* Larger */
+    font-size: 2rem;
     font-weight: 700;
-    margin-bottom: 30px; /* More space */
+    margin-bottom: 30px;
     color: var(--color-border-accent-gold);
     display: flex;
     align-items: center;
-    gap: 15px; /* More space */
+    gap: 15px;
     text-transform: uppercase;
-    letter-spacing: 0.7px; /* More pronounced */
-    text-shadow: 0 0 10px rgba(212, 175, 55, 0.2); /* Subtle glow */
+    letter-spacing: 0.7px;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
 }
 
+/* Styling for sub-titles within collapsible sections */
 .subsection-title {
     font-family: var(--font-family-body);
-    font-size: 1.35rem; /* Larger */
+    font-size: 1.35rem;
     font-weight: 600;
     color: var(--color-text-light);
-    margin-top: 30px; /* More space */
-    margin-bottom: 18px; /* More space */
+    margin-top: 30px;
+    margin-bottom: 18px;
     display: flex;
     align-items: center;
-    gap: 12px; /* More space */
+    gap: 12px;
 }
 .subsection-title:first-of-type {
-    margin-top: 0; /* No top margin if it's the first one in the section */
+    margin-top: 0; /* Removes top margin for the first subsection title */
 }
 
-/* --- Input Fields and Controls --- */
+/* --- Input Fields and Controls (for Buy/Sell flow) --- */
 .input-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px; /* More space */
-    margin-bottom: 35px; /* More space */
+    grid-template-columns: 1fr 1fr; /* Two columns for Buy and Sell inputs */
+    gap: 30px;
+    margin-bottom: 35px;
 }
 
 .input-group {
     display: flex;
     flex-direction: column;
-    gap: 12px; /* More space */
+    gap: 12px;
 }
 
 .input-label {
-    font-size: 1rem; /* Slightly larger */
+    font-size: 1rem;
     color: var(--color-text-medium);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.7px; /* More pronounced */
+    letter-spacing: 0.7px;
     display: flex;
     align-items: center;
-    gap: 10px; /* More space */
+    gap: 10px;
 }
 
 .input-controls {
     display: flex;
-    gap: 12px; /* More space */
+    gap: 12px;
     align-items: center;
 }
 
+/* Style for numerical input fields */
 .value-input {
-    flex-grow: 1;
+    flex-grow: 1; /* Allows input to take available space */
     background: var(--color-bg-tertiary);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-md);
-    padding: 12px 18px; /* Larger padding */
+    padding: 12px 18px;
     color: var(--color-text-light);
-    font-size: 1.4rem; /* Larger font */
+    font-size: 1.4rem;
     font-weight: 700;
     text-align: center;
     font-family: var(--font-family-mono);
@@ -381,9 +383,9 @@ body {
 .value-input:focus {
     outline: none;
     border-color: var(--color-accent-blue);
-    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.4); /* Stronger glow */
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.4); /* Stronger blue glow on focus */
 }
-/* Hide number input arrows */
+/* Hide default number input arrows/spinners */
 .value-input::-webkit-outer-spin-button,
 .value-input::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -393,11 +395,12 @@ body {
     -moz-appearance: textfield;
 }
 
-.btn-control { /* For +/- buttons */
-    width: 70px; /* Larger */
-    height: 55px; /* Larger */
+/* Styling for +/- control buttons */
+.btn-control {
+    width: 70px;
+    height: 55px;
     padding: 0;
-    font-size: 1.8rem; /* Larger icon */
+    font-size: 1.8rem;
     font-weight: 700;
     border-radius: var(--radius-md);
     background: var(--color-bg-tertiary);
@@ -408,37 +411,37 @@ body {
     cursor: pointer;
 }
 .btn-control:hover {
-    transform: translateY(-3px); /* More pronounced lift */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Deeper shadow */
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 }
 .btn-control:active {
     transform: translateY(0);
     box-shadow: var(--shadow-inner);
 }
-.btn-increment { background: linear-gradient(135deg, var(--color-accent-green), #24A25C); } /* Manually darkened green */
-.btn-deduct { background: linear-gradient(135deg, var(--color-accent-red), #B83C30); } /* Manually darkened red */
+.btn-increment { background: linear-gradient(135deg, var(--color-accent-green), #24A25C); } /* Green gradient for increment */
+.btn-deduct { background: linear-gradient(135deg, var(--color-accent-red), #B83C30); } /* Red gradient for deduct */
 
 
-/* --- Generic Buttons --- */
+/* --- General Button Styling (for Submit, Reset, Undo) --- */
 .btn {
-    padding: 14px 25px; /* Larger padding */
+    padding: 14px 25px;
     border-radius: var(--radius-md);
     font-weight: 600;
-    font-size: 1rem; /* Slightly larger */
+    font-size: 1rem;
     cursor: pointer;
     border: none;
     transition: all var(--transition-speed);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 12px; /* More space */
-    letter-spacing: 0.8px; /* More pronounced */
+    gap: 12px;
+    letter-spacing: 0.8px;
     text-transform: uppercase;
     box-shadow: var(--shadow-subtle);
 }
 .btn:hover {
-    transform: translateY(-3px); /* More pronounced lift */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Deeper shadow */
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 }
 .btn:active {
     transform: translateY(0);
@@ -446,7 +449,7 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--color-accent-blue), #2A7BB1); /* Manually darkened blue */
+    background: linear-gradient(135deg, var(--color-accent-blue), #2A7BB1); /* Blue gradient */
     color: white;
 }
 .btn-secondary {
@@ -458,138 +461,142 @@ body {
     border-color: var(--color-border-accent-gold);
     color: var(--color-text-light);
 }
-.btn-info { /* Undo button */
-    background: linear-gradient(135deg, var(--color-accent-info), #7B389D); /* Manually darkened purple */
+.btn-info { /* Undo button color */
+    background: linear-gradient(135deg, var(--color-accent-info), #7B389D); /* Purple gradient */
     color: white;
 }
 
+/* Grid for action buttons */
 .button-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); /* Slightly wider min-width */
-    gap: 20px; /* More space */
-    margin-bottom: 35px; /* More space */
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 20px;
+    margin-bottom: 35px;
 }
 
-/* --- Pending Selections --- */
+/* --- Pending Selections Display --- */
 .pending-selections {
     display: flex;
     justify-content: space-around;
     align-items: center;
     background: var(--color-bg-tertiary);
     border-radius: var(--radius-md);
-    padding: 25px; /* Larger padding */
+    padding: 25px;
     border: 1px solid var(--color-border-subtle);
     box-shadow: var(--shadow-inner);
 }
 
 .selection-item {
     text-align: center;
-    flex: 1;
+    flex: 1; /* Distributes space equally */
 }
 
 .selection-value {
-    font-size: 3rem; /* Larger */
+    font-size: 3rem;
     font-family: var(--font-family-title);
     font-weight: 700;
     display: block;
     line-height: 1;
-    margin-bottom: 8px; /* More space */
+    margin-bottom: 8px;
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
 .selection-label {
-    font-size: 0.9rem; /* Slightly larger */
+    font-size: 0.9rem;
     color: var(--color-text-dark);
     text-transform: uppercase;
-    letter-spacing: 1px; /* More pronounced */
+    letter-spacing: 1px;
     font-weight: 600;
 }
 
-/* --- Analysis Section --- */
+/* --- Market Sentiment Analysis Section --- */
 .analysis-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* Slightly wider min-width */
-    gap: 20px; /* More space */
-    margin-bottom: 30px; /* More space */
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
 .analysis-item {
     background: var(--color-bg-tertiary);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-md);
-    padding: 22px 18px; /* Larger padding */
+    padding: 22px 18px;
     text-align: center;
     box-shadow: var(--shadow-inner);
 }
 
 .analysis-value {
-    font-size: 2.8rem; /* Larger */
+    font-size: 2.8rem;
     font-family: var(--font-family-title);
     font-weight: 700;
     display: block;
     line-height: 1;
-    margin-bottom: 8px; /* More space */
+    margin-bottom: 8px;
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
 .analysis-label {
-    font-size: 0.85rem; /* Slightly larger */
+    font-size: 0.85rem;
     color: var(--color-text-dark);
     text-transform: uppercase;
-    letter-spacing: 1px; /* More pronounced */
+    letter-spacing: 1px;
     font-weight: 600;
 }
 
 .analysis-conclusion {
     text-align: center;
-    padding-top: 30px; /* More space */
+    padding-top: 30px;
     border-top: 1px solid var(--color-border-subtle);
+    /* Animation applied here */
+}
+/* Class added by JS to trigger animation */
+.analysis-conclusion.highlight {
+    animation: resultHighlight 1.5s ease-out forwards;
 }
 
 .conclusion-text {
     font-family: var(--font-family-title);
-    font-size: 2.2rem; /* Larger */
+    font-size: 2.2rem;
     font-weight: 700;
-    margin-bottom: 20px; /* More space */
+    margin-bottom: 20px;
     color: var(--color-text-light);
     text-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
 }
-/* No pulsing class for conclusion-text directly, the highlight goes on the parent */
-
 
 .sentiment-badge {
     display: inline-block;
-    padding: 14px 30px; /* Larger padding */
-    border-radius: 35px; /* More rounded */
-    font-size: 1rem; /* Slightly larger */
+    padding: 14px 30px;
+    border-radius: 35px;
+    font-size: 1rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1.5px; /* More pronounced */
+    letter-spacing: 1.5px;
     border: 1px solid var(--color-border-card);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); /* Deeper shadow */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     transition: all var(--transition-speed);
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* Sentiment Badge Colors */
+/* Specific colors for sentiment badges */
 .sentiment-badge.strong-buy { background: var(--color-accent-green); color: white; border-color: #24A25C; }
 .sentiment-badge.strong-sell { background: var(--color-accent-red); color: white; border-color: #B83C30; }
 .sentiment-badge.buy-retracement { background: var(--color-accent-yellow); color: var(--color-bg-darkest); border-color: #D3A70D; }
 .sentiment-badge.sell-retracement { background: var(--color-accent-orange); color: white; border-color: #C26B1C; }
-.sentiment-badge.normal-buy { background: #5BD996; /* Lightened green */ color: var(--color-bg-primary); border-color: var(--color-accent-green); }
-.sentiment-badge.normal-sell { background: #F08080; /* Lightened red */ color: var(--color-bg-primary); border-color: var(--color-accent-red); }
+.sentiment-badge.normal-buy { background: #5BD996; color: var(--color-bg-primary); border-color: var(--color-accent-green); }
+.sentiment-badge.normal-sell { background: #F08080; color: var(--color-bg-primary); border-color: var(--color-accent-red); }
 .sentiment-badge.neutral { background: var(--color-text-dark); color: var(--color-bg-primary); border-color: #6A7785; }
 .sentiment-badge.no-signal { background: var(--color-bg-tertiary); color: var(--color-text-dark); border-color: var(--color-border-subtle); }
 
 
-/* --- History & Journal List (Scrollable Content) --- */
+/* --- Scrollable Content Containers (History, Journal, News) --- */
 .history-list, .history-detail-list, .journal-list, .news-content {
-    max-height: 300px; /* Adjusted max height for scrollable content within sections */
-    overflow-y: auto;
-    padding-right: 18px; /* Space for scrollbar */
+    max-height: 300px; /* Max height before content scrolls */
+    overflow-y: auto; /* Enables vertical scrolling */
+    padding-right: 18px; /* Space for the custom scrollbar */
 }
 
-/* Custom Scrollbar Styles */
+/* Custom Scrollbar Styles (Webkit browsers) */
 .scrollable-content::-webkit-scrollbar {
     width: 10px; /* Width of the scrollbar */
     height: 10px; /* Height for horizontal scrollbars if any */
@@ -609,12 +616,13 @@ body {
 }
 
 
+/* --- History Item Styling (for Recent Flows and Detailed Notes) --- */
 .history-item, .journal-item {
     background: var(--color-bg-tertiary);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-md);
-    padding: 18px; /* Larger padding */
-    margin-bottom: 15px; /* More space */
+    padding: 18px;
+    margin-bottom: 15px;
     transition: all var(--transition-speed);
     box-shadow: var(--shadow-subtle);
     position: relative;
@@ -623,45 +631,46 @@ body {
 
 .history-item:hover, .journal-item:hover {
     border-color: var(--color-border-accent-gold);
-    transform: translateY(-3px); /* More pronounced lift */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Deeper shadow */
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 }
 
-/* Subtle line effect on hover */
+/* Subtle colored line effect on hover for history/journal items */
 .history-item::before, .journal-item::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
-    width: 6px; /* Wider line */
+    width: 6px; /* Width of the line */
     height: 100%;
     background: linear-gradient(to bottom, var(--color-accent-blue), var(--color-accent-green));
-    transform: translateX(-100%);
+    transform: translateX(-100%); /* Starts off-screen to the left */
     transition: transform var(--transition-speed);
 }
 .history-item:hover::before, .journal-item:hover::before {
-    transform: translateX(0);
+    transform: translateX(0); /* Slides in on hover */
 }
 
 .history-timestamp {
-    font-size: 0.85rem; /* Slightly larger */
+    font-size: 0.85rem;
     color: var(--color-text-dark);
-    margin-bottom: 8px; /* More space */
+    margin-bottom: 8px;
     display: block;
     font-family: var(--font-family-mono);
 }
 
-.history-title-input-group { /* For notes section input group for title */
-    margin-bottom: 12px; /* More space */
+/* Styling for the title input within detailed history notes */
+.history-title-input-group {
+    margin-bottom: 12px;
 }
 .history-title-input {
     width: 100%;
     background: var(--color-bg-darkest);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-sm);
-    padding: 10px 15px; /* Larger padding */
+    padding: 10px 15px;
     color: var(--color-text-light);
-    font-size: 0.95rem; /* Slightly larger */
+    font-size: 0.95rem;
     font-weight: 600;
     margin-top: 5px;
     transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
@@ -672,85 +681,85 @@ body {
 .history-title-input:focus {
     outline: none;
     border-color: var(--color-accent-blue);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3); /* Stronger glow */
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
 }
 
 .history-data {
-    font-size: 0.95rem; /* Slightly larger */
+    font-size: 0.95rem;
     color: var(--color-text-medium);
     line-height: 1.5;
-    margin-bottom: 12px; /* More space */
+    margin-bottom: 12px;
 }
 
-/* --- Journal Specific Styles --- */
+/* --- Trading Journal Specific Styles --- */
 .journal-form .form-group {
-    margin-bottom: 18px; /* More space */
+    margin-bottom: 18px;
 }
 .journal-form .form-group label {
     display: block;
-    margin-bottom: 10px; /* More space */
-    font-size: 0.95rem; /* Slightly larger */
+    margin-bottom: 10px;
+    font-size: 0.95rem;
     color: var(--color-text-medium);
     font-weight: 600;
 }
 
 .journal-controls {
     display: flex;
-    justify-content: flex-end; /* Align clear button to right */
-    gap: 18px; /* More space */
-    margin-bottom: 25px; /* More space */
+    justify-content: flex-end; /* Aligns buttons to the right */
+    gap: 18px;
+    margin-bottom: 25px;
     flex-wrap: wrap;
 }
 
-.journal-item {
-    /* Reuses .history-item styles */
-}
+/* Reuses .history-item styles for individual journal entries */
+.journal-item { /* ... */ }
+
 .journal-entry-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px; /* More space */
+    margin-bottom: 10px;
 }
 .journal-entry-instrument {
     font-family: var(--font-family-title);
-    font-size: 1.25rem; /* Larger */
+    font-size: 1.25rem;
     font-weight: 700;
     color: var(--color-border-accent-gold);
 }
 .journal-entry-date {
     font-family: var(--font-family-mono);
-    font-size: 0.9rem; /* Slightly larger */
+    font-size: 0.9rem;
     color: var(--color-text-dark);
 }
 .journal-entry-price-pnl {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px; /* More space */
-    font-size: 1rem; /* Slightly larger */
+    grid-template-columns: 1fr 1fr 1fr; /* Three columns for Entry, Exit, P/L */
+    gap: 12px;
+    font-size: 1rem;
     color: var(--color-text-medium);
-    margin-bottom: 15px; /* More space */
+    margin-bottom: 15px;
 }
 .journal-entry-price-pnl span {
     background: var(--color-bg-darkest);
-    padding: 8px 12px; /* Larger padding */
+    padding: 8px 12px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--color-border-subtle);
     text-align: center;
 }
-.journal-entry-price-pnl span:first-child { text-align: left; }
-.journal-entry-price-pnl span:last-child { text-align: right; }
+.journal-entry-price-pnl span:first-child { text-align: left; } /* Left align Entry Price */
+.journal-entry-price-pnl span:last-child { text-align: right; } /* Right align P/L */
 
 .journal-entry-notes {
     font-style: italic;
-    font-size: 0.9rem; /* Slightly larger */
+    font-size: 0.9rem;
     color: var(--color-text-dark);
     background: var(--color-bg-darkest);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-sm);
-    padding: 12px 18px; /* Larger padding */
-    margin-top: 12px; /* More space */
+    padding: 12px 18px;
+    margin-top: 12px;
     line-height: 1.6;
-    white-space: pre-wrap; /* Preserve line breaks */
+    white-space: pre-wrap; /* Preserves line breaks in textarea content */
 }
 .journal-entry-notes:empty::before {
     content: 'No specific notes for this trade.';
@@ -758,17 +767,17 @@ body {
 }
 
 
-/* --- Parameter Management --- */
+/* --- Parameter Management Styling --- */
 .parameter-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); /* Slightly wider min-width */
-    gap: 18px; /* More space */
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 18px;
     margin-bottom: 25px;
 }
 
 .parameter-item {
     background: var(--color-bg-tertiary);
-    padding: 20px; /* Larger padding */
+    padding: 20px;
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border-subtle);
     text-align: center;
@@ -776,7 +785,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 110px; /* Slightly taller */
+    min-height: 110px;
     box-shadow: var(--shadow-inner);
     position: relative;
 }
@@ -788,7 +797,7 @@ body {
     background: transparent;
     border: none;
     color: var(--color-text-dark);
-    font-size: 1.1rem; /* Slightly larger */
+    font-size: 1.1rem;
     cursor: pointer;
     transition: color var(--transition-speed), transform var(--transition-speed);
 }
@@ -798,28 +807,28 @@ body {
 }
 
 .parameter-value {
-    font-size: 2.5rem; /* Larger */
+    font-size: 2.5rem;
     font-family: var(--font-family-title);
     font-weight: 700;
     color: var(--color-accent-yellow);
-    margin-bottom: 8px; /* More space */
+    margin-bottom: 8px;
     line-height: 1;
 }
 
 .parameter-label {
-    font-size: 0.9rem; /* Slightly larger */
+    font-size: 0.9rem;
     color: var(--color-text-medium);
     text-transform: uppercase;
-    letter-spacing: 0.7px; /* More pronounced */
+    letter-spacing: 0.7px;
     display: flex;
-    flex-direction: column; /* Stack label and subtext */
+    flex-direction: column; /* Stacks label and subtext */
     align-items: center;
-    gap: 5px; /* More space */
+    gap: 5px;
     font-weight: 600;
 }
 
 .sub-text {
-    font-size: 0.75rem; /* Slightly larger */
+    font-size: 0.75rem;
     color: var(--color-text-placeholder);
     display: block;
     text-transform: none;
@@ -829,23 +838,24 @@ body {
 
 .parameter-add {
     display: grid;
-    grid-template-columns: 2fr 1fr auto;
-    gap: 18px; /* More space */
-    margin-top: 25px; /* More space */
-    padding-top: 25px; /* More space */
+    grid-template-columns: 2fr 1fr auto; /* Label input, value input, button */
+    gap: 18px;
+    margin-top: 25px;
+    padding-top: 25px;
     border-top: 1px solid var(--color-border-subtle);
 }
 
-/* --- Generic Text Input Styles --- */
+/* --- Generic Text Input Styles (for Notes, Journal forms, search bar) --- */
 .text-input {
     background: var(--color-bg-tertiary);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-sm);
-    padding: 12px 18px; /* Larger padding */
+    padding: 12px 18px;
     color: var(--color-text-light);
-    font-size: 1rem; /* Slightly larger */
+    font-size: 1rem;
     font-family: var(--font-family-body);
     transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+    width: 100%; /* Ensures inputs take full available width */
 }
 .text-input::placeholder {
     color: var(--color-text-placeholder);
@@ -853,73 +863,79 @@ body {
 .text-input:focus {
     outline: none;
     border-color: var(--color-accent-blue);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3); /* Stronger glow */
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
 }
 textarea.text-input {
-    resize: vertical;
-    min-height: 90px; /* Slightly taller */
+    resize: vertical; /* Allows vertical resizing */
+    min-height: 90px;
 }
 
+/* Styling for the search bar, with an embedded icon */
 .search-input {
-    padding-left: 45px; /* Space for icon */
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="%236A8095"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L461.7 461.7c4.7 4.7 4.7 12.3 0 17s-12.3 4.7-17 0L359.3 376c-34.4 25.1-76.8 40-122.7 40C100.3 416 0 315.7 0 181.7S100.3 0 233.7 0 416 100.3 416 208zM233.7 352c-70.7 0-128-57.3-128-128s57.3-128 128-128 128 57.3 128 128-57.3 128-128 128z"/></svg>');
+    padding-left: 45px; /* Creates space for the icon */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="%236A8095"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L461.7 461.7c4.7 4.7 4.7 12.3 0 17s-12.3 4.7-17 0L359.3 376c-34.4 25.1-76.8 40-122.7 40C100.3 416 0 315.7 0 181.7S100.3 0 233.7 0 416 100.3 416 208zM233.7 352c-70.7 0-128-57.3-128-128s57.3-128 128-128 128 57.3 128 128-57.3 128-128 128z"/></svg>'); /* SVG of a search icon */
     background-repeat: no-repeat;
-    background-position: 15px center; /* Centered icon */
-    background-size: 22px 22px; /* Larger icon */
+    background-position: 15px center; /* Positions the icon */
+    background-size: 22px 22px; /* Sizes the icon */
 }
 
-/* --- Collapsible Panel --- */
+/* --- Collapsible Panel Styling (for Notes, Parameters, Journal) --- */
 .collapsible-panel-container {
-    grid-column: span 2; /* Spans both columns in the main grid */
-    /* Handled by JS for animation */
-    /* max-height: 0; opacity: 0; overflow: hidden; */
+    grid-column: span 2; /* Makes this section span both columns in the main grid */
 }
 
+/* Header of the collapsible panel, acts as the toggle button */
 .collapsible-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
     background: var(--color-bg-secondary);
-    padding: 20px 30px; /* Larger padding */
-    margin: -30px; /* Adjust to cover section-card padding */
-    margin-bottom: 30px; /* Add margin after header */
+    padding: 20px 30px;
+    margin: -30px; /* Pulls the header to cover the section-card's padding */
+    margin-bottom: 30px; /* Spacing after the header */
     border-bottom: 1px solid var(--color-border-subtle);
     transition: background-color var(--transition-speed);
 }
 .collapsible-header:hover {
-    background-color: var(--color-bg-light); /* More pronounced hover */
+    background-color: var(--color-bg-light); /* Darker background on hover */
 }
 
-.collapsible-header .section-title { /* Reuse section-title style */
-    margin-bottom: 0; /* Override default margin */
+/* Ensures the section title within the header has no extra margin */
+.collapsible-header .section-title {
+    margin-bottom: 0;
 }
 
+/* Styling for the chevron icon (rotated to indicate state) */
 .toggle-icon {
-    font-size: 1.8rem; /* Larger */
+    font-size: 1.8rem;
     color: var(--color-border-accent-gold);
     transition: transform var(--transition-speed);
 }
+/* Default state for icon (pointing down) */
 .collapsible-content.collapsed + .collapsible-header .toggle-icon {
     transform: rotate(0deg);
 }
+/* Rotated state for icon (pointing up when active/expanded) */
 .collapsible-content:not(.collapsed) + .collapsible-header .toggle-icon {
     transform: rotate(180deg);
 }
 
+/* Content area that collapses/expands */
 .collapsible-content {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition: max-height 0.6s ease-out, opacity 0.6s ease-out; /* Slower transition for smoother collapse */
+    max-height: 0; /* Hidden when collapsed */
+    opacity: 0; /* Fades out when collapsed */
+    overflow: hidden; /* Hides content overflow when collapsed */
+    transition: max-height 0.6s ease-out, opacity 0.6s ease-out; /* Smooth collapse/expand transition */
 }
+/* State when content is expanded/active */
 .collapsible-content.active {
-    max-height: 2000px; /* Very large to ensure all content fits, adjust if content is much larger */
+    max-height: 2000px; /* A large value to accommodate all content */
     opacity: 1;
-    overflow: visible; /* Let scrollable parts handle their own overflow */
+    overflow: visible; /* Allows inner scrollable areas to work */
 }
 
-/* --- News Panel (Right Corner) --- */
+/* --- News/Market Insights Panel (Right Column) --- */
 .news-panel {
     background: var(--color-bg-secondary);
     border: 1px solid var(--color-border-card);
@@ -929,21 +945,21 @@ textarea.text-input {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    position: sticky; /* Makes it stick when scrolling */
-    top: 30px; /* Distance from top of viewport */
-    height: fit-content; /* Fit content, but allows scrolling if content is too long */
-    animation: fadeIn 0.8s 0.2s forwards; /* Delayed fade-in */
+    position: sticky; /* Makes the panel stick while scrolling the main content */
+    top: 30px; /* Distance from the top of the viewport when sticky */
+    height: fit-content; /* Adjusts height based on content */
+    animation: fadeIn 0.8s 0.2s forwards; /* Delayed fade-in animation */
 }
 
 .news-panel-title {
     font-family: var(--font-family-title);
-    font-size: 1.6rem; /* Slightly larger */
+    font-size: 1.6rem;
     font-weight: 700;
     color: var(--color-border-accent-gold);
-    margin-bottom: 18px; /* More space */
+    margin-bottom: 18px;
     display: flex;
     align-items: center;
-    gap: 12px; /* More space */
+    gap: 12px;
     text-transform: uppercase;
     letter-spacing: 0.6px;
     padding-bottom: 18px;
@@ -951,35 +967,35 @@ textarea.text-input {
 }
 
 .news-content {
-    max-height: calc(90vh - 150px); /* Adjusted based on panel height and padding */
-    padding-right: 15px; /* For scrollbar */
+    max-height: calc(90vh - 150px); /* Adjusts max height for scroll based on viewport and panel padding */
+    padding-right: 15px; /* Space for scrollbar */
 }
 
 .news-item {
     background: var(--color-bg-tertiary);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-md);
-    padding: 15px; /* Larger padding */
-    margin-bottom: 12px; /* More space */
+    padding: 15px;
+    margin-bottom: 12px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .news-item:hover {
-    transform: translateY(-3px); /* More pronounced lift */
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); /* Deeper shadow */
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
 .news-item:last-child {
-    margin-bottom: 0;
+    margin-bottom: 0; /* No bottom margin for the last item */
 }
 
 .news-source {
-    font-size: 0.85rem; /* Slightly larger */
+    font-size: 0.85rem;
     font-weight: 600;
     color: var(--color-text-dark);
     margin-bottom: 5px;
     display: block;
 }
 .news-headline {
-    font-size: 0.95rem; /* Slightly larger */
+    font-size: 0.95rem;
     color: var(--color-text-light);
     line-height: 1.4;
 }
@@ -994,7 +1010,7 @@ textarea.text-input {
     margin-top: 20px;
 }
 
-/* --- Utility Colors (Text) --- */
+/* --- Utility Color Classes (for text) --- */
 .text-accent-green { color: var(--color-accent-green); }
 .text-accent-red { color: var(--color-accent-red); }
 .text-accent-yellow { color: var(--color-accent-yellow); }
@@ -1005,30 +1021,32 @@ textarea.text-input {
 .text-text-muted { color: var(--color-text-dark); } /* Alias for consistency */
 
 
-/* --- Responsive Design --- */
+/* --- Responsive Design (Media Queries) --- */
+/* For screens smaller than 1200px, stack the main app and news panel */
 @media (max-width: 1200px) {
     .app-wrapper {
-        grid-template-columns: 1fr; /* Stack main content and news panel */
+        grid-template-columns: 1fr; /* Single column layout */
         gap: 25px;
-        max-width: 900px;
+        max-width: 900px; /* Constrain max width for readability */
     }
     .news-panel {
         position: relative; /* No longer sticky when stacked */
         top: auto;
         width: 100%;
-        max-height: 400px; /* Give it a max height for scroll */
+        max-height: 400px; /* Provides a max height for scrolling when stacked */
     }
     .app-container {
         padding: 25px;
     }
 }
 
+/* For screens smaller than 1024px, stack the top sections of the main app */
 @media (max-width: 1024px) {
     .main-content-grid {
-        grid-template-columns: 1fr; /* Stack top two sections */
+        grid-template-columns: 1fr; /* All sections stack vertically */
     }
     .collapsible-panel-container {
-        grid-column: span 1; /* Adjust span for single column */
+        grid-column: span 1; /* Adjusts the span for single column */
     }
     .header-right {
         flex-direction: column;
@@ -1041,6 +1059,7 @@ textarea.text-input {
     }
 }
 
+/* For screens smaller than 768px (tablets and large phones) */
 @media (max-width: 768px) {
     body {
         padding: 20px;
@@ -1074,17 +1093,17 @@ textarea.text-input {
         margin-top: 20px;
     }
     .input-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Input groups stack vertically */
         gap: 20px;
         margin-bottom: 25px;
     }
     .button-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Buttons stack vertically */
         gap: 15px;
         margin-bottom: 25px;
     }
     .analysis-grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr; /* Analysis items remain 2 per row */
         gap: 15px;
     }
     .value-input {
@@ -1111,7 +1130,7 @@ textarea.text-input {
         padding: 10px 20px;
     }
     .history-list, .history-detail-list, .journal-list, .news-content {
-        max-height: 200px; /* Reduced max height */
+        max-height: 200px; /* Reduced max height for smaller screens */
         padding-right: 10px;
     }
     .news-panel {
@@ -1128,6 +1147,7 @@ textarea.text-input {
     }
 }
 
+/* For very small screens (phones) */
 @media (max-width: 480px) {
     body {
         padding: 15px;
@@ -1177,9 +1197,9 @@ textarea.text-input {
         background-size: 18px 18px;
     }
     .parameter-add {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Stacks parameter add inputs/button vertically */
     }
     .journal-entry-price-pnl {
-        grid-template-columns: 1fr; /* Stack prices/PNL */
+        grid-template-columns: 1fr; /* Stacks price/PNL info vertically */
     }
 }

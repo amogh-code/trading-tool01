@@ -20,6 +20,9 @@
                     <div class="time-info" id="timezone-clocks">
                         </div>
                     <div class="live-clock" id="live-clock"></div>
+                    <a href="about.html" class="btn btn-icon btn-about" title="About This Tool">
+                        <i class="fas fa-question-circle"></i>
+                    </a>
                     <button class="btn btn-icon btn-clear-all" id="clearAllDataBtn" title="Clear All Data (Counts, History, Journal, Parameters)">
                         <i class="fas fa-eraser"></i>
                     </button>
@@ -90,8 +93,8 @@
                             <span class="analysis-label">Influence %</span>
                         </div>
                     </div>
-                    <div class="analysis-conclusion">
-                        <p class="conclusion-text" id="conclusion">Conclusion: Awaiting Data</p>
+                    <div class="analysis-conclusion" id="analysis-conclusion-area">
+                        <p class="conclusion-text" id="conclusion">Conclusion: No Signal</p>
                         <span class="sentiment-badge" id="sentiment-badge">No Signal</span>
                     </div>
                 </section>
@@ -105,17 +108,17 @@
 
                 <section class="section-card collapsible-panel-container">
                     <div class="collapsible-header" id="toggleNotesParamsBtn">
-                        <h2 class="section-title flex-grow"><i class="fas fa-info-circle"></i> Notes & Parameters</h2>
+                        <h2 class="section-title flex-grow"><i class="fas fa-clipboard-list"></i> Notes & Parameters & Journal</h2>
                         <i class="fas fa-chevron-down toggle-icon"></i>
                     </div>
-                    <div class="collapsible-content" id="notes-params-content">
-                        <h3 class="subsection-title"><i class="fas fa-clipboard-list"></i> Detailed Entry History</h3>
+                    <div class="collapsible-content collapsed" id="notes-params-content">
+                        <h3 class="subsection-title"><i class="fas fa-marker"></i> Detailed Entry History Notes</h3>
                         <input type="text" id="note-search" class="text-input search-input" placeholder="Search notes by title or content...">
                         <div id="historyWithNotes" class="history-detail-list scrollable-content">
                             <p class="text-center text-text-dark py-4">No detailed entries yet.</p>
                         </div>
 
-                        <h3 class="subsection-title mt-8"><i class="fas fa-sliders-h"></i> Custom Parameters</h3>
+                        <h3 class="subsection-title mt-8"><i class="fas fa-sliders-h"></i> Custom Trading Parameters</h3>
                         <div id="parameter-grid" class="parameter-grid">
                             </div>
                         <div class="parameter-add">
@@ -124,7 +127,7 @@
                             <button class="btn btn-secondary" id="addParameterBtn"><i class="fas fa-plus-circle"></i> Add Parameter</button>
                         </div>
 
-                        <h3 class="subsection-title mt-8"><i class="fas fa-book-open"></i> Trading Journal</h3>
+                        <h3 class="subsection-title mt-8"><i class="fas fa-pen-nib"></i> Log New Trade</h3>
                         <div class="journal-form">
                             <div class="form-group">
                                 <label for="trade-instrument">Instrument:</label>
@@ -159,7 +162,9 @@
                                 <button class="btn btn-secondary" id="clearJournalFormBtn"><i class="fas fa-undo"></i> Reset Form</button>
                             </div>
                         </div>
-                        <div class="journal-controls mt-8">
+
+                        <h3 class="subsection-title mt-8"><i class="fas fa-scroll"></i> Logged Trades History</h3>
+                        <div class="journal-controls">
                             <button class="btn btn-secondary" id="clearJournalBtn"><i class="fas fa-trash-alt"></i> Clear All Journal Entries</button>
                         </div>
                         <div id="journal-entries" class="journal-list scrollable-content">
@@ -198,7 +203,7 @@
                     <p class="news-headline">Gold futures jump as geopolitical tensions escalate, safe-haven demand rises.</p>
                 </div>
                 <div class="news-item disclaimer">
-                    Disclaimer: This is a static, simulated news feed for design demonstration. Live market news requires integration with a backend API due to CORS policies.
+                    **Disclaimer:** This is a static, simulated news feed for design demonstration. Live market news requires integration with a backend API due to browser security (CORS) and API key requirements.
                 </div>
             </div>
         </aside>

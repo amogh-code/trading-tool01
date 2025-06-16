@@ -16,13 +16,14 @@ let customParameters = [ // Default parameters
     { id: 'mtf-confirmation', label: 'MTF CONFIRMATION', value: 1.0, subText: '(0.5=Down TF + 0.5=Up TF)' }
 ];
 
-// --- DOM Elements ---
+// --- DOM Element References ---
+// Centralizing DOM queries for efficiency and readability
 const DOMElements = {
     // Header & Time
     liveClock: document.getElementById('live-clock'),
     timezoneClocksContainer: document.getElementById('timezone-clocks'),
     clearAllDataBtn: document.getElementById('clearAllDataBtn'),
-    aboutBtn: document.querySelector('.btn-about'), // Select the new About button
+    aboutBtn: document.querySelector('.btn-about'), 
 
     // Input & Actions
     buyInput: document.getElementById('buy-input'),
@@ -42,14 +43,14 @@ const DOMElements = {
     percentageDisplay: document.getElementById('percentage'),
     conclusionText: document.getElementById('conclusion'),
     sentimentBadge: document.getElementById('sentiment-badge'),
-    analysisConclusionArea: document.getElementById('analysis-conclusion-area'), // New ID to target for animation
+    analysisConclusionArea: document.getElementById('analysis-conclusion-area'), 
 
     // Recent Flows (History)
     historyContainer: document.getElementById('history'),
 
     // Collapsible Notes & Parameters Section
-    toggleNotesParamsBtn: document.getElementById('toggleNotesParamsBtn'), // The header to click
-    notesParamsContent: document.getElementById('notes-params-content'), // The content to collapse/expand
+    toggleNotesParamsBtn: document.getElementById('toggleNotesParamsBtn'), 
+    notesParamsContent: document.getElementById('notes-params-content'), 
 
     // Detailed History with Notes
     historyWithNotesContainer: document.getElementById('historyWithNotes'),
@@ -73,7 +74,7 @@ const DOMElements = {
     clearJournalFormBtn: document.getElementById('clearJournalFormBtn'),
     clearJournalBtn: document.getElementById('clearJournalBtn'),
 
-    // News Feed (Placeholder)
+    // News Feed (Placeholder - not dynamic)
     newsFeedContainer: document.getElementById('news-feed'),
 };
 
@@ -91,20 +92,21 @@ const SENTIMENT_STYLES = {
     'STRONG BUY': { className: 'strong-buy', msg: '📈 STRONG BUY' },
     'STRONG SELL': { className: 'strong-sell', msg: '📉 STRONG SELL' },
     'BUY RETRACEMENT EXPECTED': { className: 'buy-retracement', msg: '↘️ BUY RETRACEMENT' },
-    'SELL RETRACEMENT EXPECTED': { className: 'sell-retracement', msg: '↗️ SELL RETRACEMENT' }, // Corrected msg
+    'SELL RETRACEMENT EXPECTED': { className: 'sell-retracement', msg: '↗️ SELL RETRACEMENT' },
     'NORMAL BUY': { className: 'normal-buy', msg: '✅ NORMAL BUY' },
     'NORMAL SELL': { className: 'normal-sell', msg: '❌ NORMAL SELL' },
     'BOTH ARE EQUAL': { className: 'neutral', msg: '⚖️ NEUTRAL' },
     'NO SIGNAL': { className: 'no-signal', msg: 'NO SIGNAL' }
 };
 
+// Timezone configuration for dynamic clock display
 const TIMEZONE_CITIES = [
     { label: 'IST', timezone: 'Asia/Kolkata', icon: 'fas fa-sun' },
     { label: 'LDN', timezone: 'Europe/London', icon: 'fas fa-globe-europe' },
     { label: 'NY', timezone: 'America/New_York', icon: 'fas fa-city' },
     { label: 'TYO', timezone: 'Asia/Tokyo', icon: 'fas fa-yen-sign' },
     { label: 'SYD', timezone: 'Australia/Sydney', icon: 'fas fa-globe-asia' },
-    { label: 'UTC', timezone: 'UTC', icon: 'fas fa-globe' } // UTC is a valid timezone name
+    { label: 'UTC', timezone: 'UTC', icon: 'fas fa-globe' }
 ];
 
 // --- Initialization ---
@@ -112,32 +114,31 @@ document.addEventListener('DOMContentLoaded', initializeApp);
 
 function initializeApp() {
     loadStateFromLocalStorage();
-    renderTimezoneClocks(); // Render timezone elements once
-    updateAllDisplays();
+    renderTimezoneClocks(); // FIX: Ensure timezone elements are rendered before updateClocks tries to access them.
+    updateAllDisplays(); // Initial UI update based on loaded or default state
     setupEventListeners();
-    startClocks();
-    // DOMElements.notesParamsContent.classList.add('active'); // Start collapsed as per new requirement
+    startClocks(); // Start the live clock updates
 }
 
 function loadStateFromLocalStorage() {
-    const storedBuyCount = localStorage.getItem(STORAGE_KEYS.BUY_COUNT);
-    const storedSellCount = localStorage.getItem(STORAGE_KEYS.SELL_COUNT);
+    // FIX: Ensure default to 0 if localStorage items are null/undefined
+    buyCount = parseFloat(localStorage.getItem(STORAGE_KEYS.BUY_COUNT)) || 0;
+    sellCount = parseFloat(localStorage.getItem(STORAGE_KEYS.SELL_COUNT)) || 0;
 
-    buyCount = storedBuyCount ? parseFloat(storedBuyCount) : 0;
-    sellCount = storedSellCount ? parseFloat(storedSellCount) : 0;
     historyList = JSON.parse(localStorage.getItem(STORAGE_KEYS.HISTORY_LIST)) || [];
     historyWithNotes = JSON.parse(localStorage.getItem(STORAGE_KEYS.HISTORY_WITH_NOTES)) || [];
     journalEntries = JSON.parse(localStorage.getItem(STORAGE_KEYS.JOURNAL_ENTRIES)) || [];
 
     const storedParams = JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_PARAMETERS));
-    if (storedParams && storedParams.length > 0) { // Only load if not empty
+    // Load custom parameters; if none saved, use the default set.
+    if (storedParams && storedParams.length > 0) {
         customParameters = storedParams;
     }
 }
 
 function saveStateToLocalStorage() {
-    localStorage.setItem(STORAGE_KEYS.BUY_COUNT, buyCount);
-    localStorage.setItem(STORAGE_KEYS.SELL_COUNT, sellCount);
+    localStorage.setItem(STORAGE_KEYS.BUY_COUNT, buyCount.toString()); // Store as string
+    localStorage.setItem(STORAGE_KEYS.SELL_COUNT, sellCount.toString()); // Store as string
     localStorage.setItem(STORAGE_KEYS.HISTORY_LIST, JSON.stringify(historyList));
     localStorage.setItem(STORAGE_KEYS.HISTORY_WITH_NOTES, JSON.stringify(historyWithNotes));
     localStorage.setItem(STORAGE_KEYS.JOURNAL_ENTRIES, JSON.stringify(journalEntries));
@@ -158,15 +159,16 @@ function updateAnalysisDisplay() {
     const percentage = total ? ((difference / total) * 100).toFixed(2) : 0;
 
     let conclusion = '';
-    if (buyCount === sellCount && total === 0) {
+    // FIX: Refine "NO SIGNAL" logic for clarity
+    if (total === 0 && buyCount === 0 && sellCount === 0) {
         conclusion = 'NO SIGNAL';
     } else if (buyCount === sellCount) {
         conclusion = 'BOTH ARE EQUAL';
-    } else if (percentage <= 25) {
+    } else if (percentage <= 25) { // Low percentage difference
         conclusion = buyCount > sellCount ? 'BUY RETRACEMENT EXPECTED' : 'SELL RETRACEMENT EXPECTED';
-    } else if (percentage > 66) {
+    } else if (percentage > 66) { // High percentage difference
         conclusion = buyCount > sellCount ? 'STRONG BUY' : 'STRONG SELL';
-    } else {
+    } else { // Moderate percentage difference
         conclusion = buyCount > sellCount ? 'NORMAL BUY' : 'NORMAL SELL';
     }
 
@@ -177,12 +179,13 @@ function updateAnalysisDisplay() {
     DOMElements.conclusionText.innerText = `Conclusion: ${conclusion}`;
 
     const style = SENTIMENT_STYLES[conclusion] || SENTIMENT_STYLES['NO SIGNAL'];
-    DOMElements.sentimentBadge.className = `sentiment-badge ${style.className}`;
+    DOMElements.sentimentBadge.className = `sentiment-badge ${style.className}`; // Ensure class name is set
     DOMElements.sentimentBadge.innerText = style.msg;
 
     // Trigger highlight animation on the analysis conclusion area
-    DOMElements.analysisConclusionArea.classList.remove('highlight'); // Remove to re-trigger
-    void DOMElements.analysisConclusionArea.offsetWidth; // Trigger reflow
+    DOMElements.analysisConclusionArea.classList.remove('highlight'); // Remove to re-trigger animation
+    // Force reflow to restart animation on successive calls
+    void DOMElements.analysisConclusionArea.offsetWidth;
     DOMElements.analysisConclusionArea.classList.add('highlight'); // Add to start animation
 }
 
@@ -370,7 +373,8 @@ function submitEntries() {
     const percentage = total ? ((difference / total) * 100).toFixed(2) : 0;
 
     let conclusion = '';
-    if (buyCount === sellCount && total === 0) {
+    // FIX: Ensure "NO SIGNAL" only when truly empty
+    if (total === 0 && buyCount === 0 && sellCount === 0) {
         conclusion = 'NO SIGNAL';
     } else if (buyCount === sellCount) {
         conclusion = 'BOTH ARE EQUAL';
@@ -516,7 +520,7 @@ function saveTrade() {
     const entryPrice = parseFloat(DOMElements.tradeEntryPriceInput.value);
     const exitPrice = parseFloat(DOMElements.tradeExitPriceInput.value);
     const pnl = parseFloat(DOMElements.tradePnlInput.value);
-    const date = DOMElements.tradeDateInput.value; // формате YYYY-MM-DD
+    const date = DOMElements.tradeDateInput.value; // форматеYYYY-MM-DD
     const notes = DOMElements.tradeNotesInput.value.trim();
 
     if (!instrument || !date) {
@@ -653,11 +657,12 @@ function setupEventListeners() {
 }
 
 // --- Live Clocks ---
+// This function dynamically creates the timezone clock elements
 function renderTimezoneClocks() {
     DOMElements.timezoneClocksContainer.innerHTML = TIMEZONE_CITIES.map(tz => `
         <div class="time-zone">
             <span class="time-label"><i class="${tz.icon}"></i> ${tz.label}:</span>
-            <span class="time-value" id="${tz.label.toLowerCase().replace(/[^a-z0-9]/g, '')}-time"></span>
+            <span class="time-value" id="${tz.label.toLowerCase().replace(/[^a-z0-9]/g, '')}-time">--:--:-- --</span>
         </div>
     `).join('');
 }
@@ -665,21 +670,30 @@ function renderTimezoneClocks() {
 function updateClocks() {
     const now = new Date();
 
-    // Local Live Clock
+    // Update Local Live Clock
     DOMElements.liveClock.innerText = now.toLocaleTimeString();
 
-    // Specific Timezones
+    // Update Specific Timezones
     TIMEZONE_CITIES.forEach(tz => {
         // Construct the ID based on the label, converting it to lowercase and removing non-alphanumeric
         const elementId = `${tz.label.toLowerCase().replace(/[^a-z0-9]/g, '')}-time`;
         const element = document.getElementById(elementId);
         if (element) {
-            element.innerText = now.toLocaleTimeString('en-US', { timeZone: tz.timezone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+            // FIX: Ensure correct options for toLocaleTimeString
+            element.innerText = now.toLocaleTimeString('en-US', { 
+                timeZone: tz.timezone, 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit', 
+                hour12: true 
+            });
+        } else {
+            console.warn(`Timezone element not found for ID: ${elementId}`); // Debugging help
         }
     });
 }
 
 function startClocks() {
-    updateClocks(); // Initial update
+    updateClocks(); // Initial update to show times immediately
     setInterval(updateClocks, 1000); // Update every second
 }

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantumFlow Analyzer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="app-title-wrapper">
+                <h1 class="app-title">QuantumFlow Analyzer</h1>
+                <p class="app-subtitle">Intuitive Buy/Sell Sentiment Analysis</p>
+            </div>
+            <div class="header-right">
+                <div class="live-clock" id="live-clock"></div>
+                <button class="btn btn-secondary btn-icon" id="clearHistoryBtn" title="Clear All History">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section class="section-card actions-section">
+                <h2 class="section-title">Record Flow</h2>
+                <div class="button-grid">
+                    <button class="btn btn-action btn-buy" data-action="buy">
+                        <i class="fas fa-plus-circle"></i> Buy (+0.5)
+                    </button>
+                    <button class="btn btn-action btn-sell" data-action="sell">
+                        <i class="fas fa-minus-circle"></i> Sell (+0.5)
+                    </button>
+                    <button class="btn btn-primary btn-submit" id="submitEntriesBtn">
+                        <i class="fas fa-arrow-alt-circle-right"></i> Submit Entry
+                    </button>
+                    <button class="btn btn-secondary" id="resetCountsBtn">
+                        <i class="fas fa-redo"></i> Reset Current
+                    </button>
+                    <button class="btn btn-info" id="undoLastActionBtn">
+                        <i class="fas fa-undo"></i> Undo
+                    </button>
+                    <button class="btn btn-note" id="openNoteModalBtn">
+                        <i class="fas fa-sticky-note"></i> Notes & Params
+                    </button>
+                </div>
+                <div class="pending-selections">
+                    <div class="selection-item">
+                        <span id="selected-buy" class="selection-value text-green">0.0</span>
+                        <span class="selection-label">Pending Buys</span>
+                    </div>
+                    <div class="selection-item">
+                        <span id="selected-sell" class="selection-value text-red">0.0</span>
+                        <span class="selection-label">Pending Sells</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-card analysis-section">
+                <h2 class="section-title">Current Flow Analysis</h2>
+                <div class="analysis-grid">
+                    <div class="analysis-item">
+                        <span id="buy-count" class="analysis-value text-green">0.0</span>
+                        <span class="analysis-label">Total Buys</span>
+                    </div>
+                    <div class="analysis-item">
+                        <span id="sell-count" class="analysis-value text-red">0.0</span>
+                        <span class="analysis-label">Total Sells</span>
+                    </div>
+                    <div class="analysis-item">
+                        <span id="difference" class="analysis-value text-yellow">0.0</span>
+                        <span class="analysis-label">Difference</span>
+                    </div>
+                    <div class="analysis-item">
+                        <span id="percentage" class="analysis-value text-purple">0%</span>
+                        <span class="analysis-label">Percentage</span>
+                    </div>
+                </div>
+                <div class="analysis-conclusion">
+                    <p class="conclusion-text" id="conclusion">Conclusion: Awaiting Data</p>
+                    <span class="sentiment-badge" id="sentiment-badge">No Signal</span>
+                </div>
+            </section>
+
+            <section class="section-card history-section">
+                <h2 class="section-title">Recent Entries <span class="text-xs text-gray-500">(Last 30)</span></h2>
+                <div id="history" class="history-list scrollbar-thin">
+                    <p class="text-center text-gray-500 py-4">No entries yet.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="noteModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeModalBtn">&times;</span>
+            <h2 class="modal-title">Trading Parameters & Notes</h2>
+
+            <div class="parameter-grid">
+                <div class="parameter-item">
+                    <div class="parameter-value">1.0</div>
+                    <div class="parameter-label">BTT <i class="fas fa-info-circle tooltip" title="Base Trend Type"></i></div>
+                </div>
+                <div class="parameter-item">
+                    <div class="parameter-value">1.0</div>
+                    <div class="parameter-label">FUTLEVEL <i class="fas fa-info-circle tooltip" title="Future Level Impact"></i></div>
+                </div>
+                <div class="parameter-item">
+                    <div class="parameter-value">1.0 <span class="sub-text">(0.5 for weak signs)</span></div>
+                    <div class="parameter-label">VSA <i class="fas fa-info-circle tooltip" title="Volume Spread Analysis"></i></div>
+                </div>
+                <div class="parameter-item">
+                    <div class="parameter-value">1.0 <span class="sub-text">(0.5 for derivations)</span></div>
+                    <div class="parameter-label">VLEVEL <i class="fas fa-info-circle tooltip" title="Volatility Level"></i></div>
+                </div>
+                <div class="parameter-item">
+                    <div class="parameter-value">0.5</div>
+                    <div class="parameter-label">WFUTLEVEL <i class="fas fa-info-circle tooltip" title="Weak Future Level Impact"></i></div>
+                </div>
+                <div class="parameter-item">
+                    <div class="parameter-value">1.0 <span class="sub-text">(0.5=Down TF + 0.5=Up TF)</span></div>
+                    <div class="parameter-label">MTF CONFIRMATION <i class="fas fa-info-circle tooltip" title="Multi-Timeframe Confirmation"></i></div>
+                </div>
+            </div>
+
+            <h3 class="modal-subtitle">Entry History with Notes</h3>
+            <div id="historyWithNotes" class="history-detail-list scrollbar-thin">
+                <p class="text-center text-gray-500 py-4">No detailed entries yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

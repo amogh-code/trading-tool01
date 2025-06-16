@@ -21,6 +21,8 @@
     --color-text-medium: #C0C8D4;  /* Secondary text, light blue-grey */
     --color-text-dark: #8C99A8;    /* Muted text, slate grey */
     --color-text-placeholder: #6A8095; /* Placeholder text */
+    --color-text-green-plus: #2ECC71; /* Green for positive values */
+    --color-text-red-minus: #E74C3C;  /* Red for negative values */
 
     /* Accents (Stock Market inspired - professional tones) */
     --color-accent-green: #2ECC71; /* Emerald Green (Buy) */
@@ -72,8 +74,8 @@
 
 /* Stock Ticker Animation */
 @keyframes tickerScroll {
-    0% { transform: translateX(100%); }
-    100% { transform: translateX(-100%); }
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); } /* Half the content width for seamless loop */
 }
 
 
@@ -123,9 +125,12 @@ body {
     color: var(--color-text-light);
     font-weight: 600;
 }
-.ticker-item:nth-child(even) { color: var(--color-accent-green); } /* Example alternating colors */
-.ticker-item:nth-child(odd) { color: var(--color-accent-red); } /* Example alternating colors */
-/* More specific color based on value can be done with JS for real data */
+.text-green-plus {
+    color: var(--color-text-green-plus);
+}
+.text-red-minus {
+    color: var(--color-text-red-minus);
+}
 
 
 /* --- App Wrapper (for main content + news panel layout) --- */
@@ -522,8 +527,8 @@ body {
     font-family: var(--font-family-title);
     font-weight: 700;
     display: block;
-    margin-bottom: 8px; /* More space */
     line-height: 1;
+    margin-bottom: 8px; /* More space */
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
@@ -1038,6 +1043,19 @@ textarea.text-input {
 
 @media (max-width: 768px) {
     body {
+        padding: 20px;
+    }
+    .stock-ticker-wrapper {
+        padding: 6px 0;
+        font-size: 0.8rem;
+    }
+    .stock-ticker-content {
+        animation-duration: 30s; /* Faster scroll on smaller screens */
+    }
+    .stock-ticker-content .ticker-item {
+        padding: 0 15px;
+    }
+    .app-wrapper {
         padding: 20px;
     }
     .app-container {

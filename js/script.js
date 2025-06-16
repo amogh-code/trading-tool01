@@ -3,10 +3,10 @@ let buyCount = 0;
 let sellCount = 0;
 let selectedBuy = 0;
 let selectedSell = 0;
-let selectionStack = []; // Stores 'buy', 'sell' or { type: 'input', value: X, original: Y } for undo
-let historyList = []; // Simple text history
-let historyWithNotes = []; // Detailed history with notes
-let journalEntries = []; // New array for trading journal entries
+let selectionStack = []; // Stores actions for undo functionality
+let historyList = []; // Simple text history for "Recent Flows"
+let historyWithNotes = []; // Detailed history with notes for "Notes & Parameters"
+let journalEntries = []; // Trading journal entries
 let customParameters = [ // Default parameters
     { id: 'btt', label: 'BTT', value: 1.0, subText: null },
     { id: 'futlevel', label: 'FUTLEVEL', value: 1.0, subText: null },
@@ -18,11 +18,9 @@ let customParameters = [ // Default parameters
 
 // --- DOM Elements ---
 const DOMElements = {
-    // Time & Header
+    // Header & Time
     liveClock: document.getElementById('live-clock'),
-    newYorkTime: document.getElementById('new-york-time'),
-    londonTime: document.getElementById('london-time'),
-    indiaTime: document.getElementById('india-time'),
+    timezoneClocksContainer: document.getElementById('timezone-clocks'),
     clearAllDataBtn: document.getElementById('clearAllDataBtn'),
 
     // Input & Actions
@@ -44,13 +42,14 @@ const DOMElements = {
     conclusionText: document.getElementById('conclusion'),
     sentimentBadge: document.getElementById('sentiment-badge'),
 
-    // History
+    // Recent Flows (History)
     historyContainer: document.getElementById('history'),
 
-    // Modals
-    infoModal: document.getElementById('infoModal'),
-    closeInfoModalBtn: document.getElementById('closeInfoModalBtn'),
-    openInfoModalBtn: document.getElementById('openInfoModalBtn'), // Separate button
+    // Collapsible Notes & Parameters Section
+    toggleNotesParamsBtn: document.getElementById('toggleNotesParamsBtn'), // The header to click
+    notesParamsContent: document.getElementById('notes-params-content'), // The content to collapse/expand
+
+    // Detailed History with Notes
     historyWithNotesContainer: document.getElementById('historyWithNotes'),
     noteSearchInput: document.getElementById('note-search'),
 
@@ -60,11 +59,7 @@ const DOMElements = {
     newParamValueInput: document.getElementById('new-param-value'),
     addParameterBtn: document.getElementById('addParameterBtn'),
 
-    // Trading Journal
-    journalLogModal: document.getElementById('journalLogModal'),
-    closeJournalLogModalBtn: document.getElementById('closeJournalLogModalBtn'),
-    openJournalModalBtn: document.getElementById('openJournalModalBtn'),
-    clearJournalBtn: document.getElementById('clearJournalBtn'),
+    // Trading Journal (within collapsible section)
     journalEntriesContainer: document.getElementById('journal-entries'),
     tradeInstrumentInput: document.getElementById('trade-instrument'),
     tradeEntryPriceInput: document.getElementById('trade-entry-price'),
@@ -73,6 +68,11 @@ const DOMElements = {
     tradeDateInput: document.getElementById('trade-date'),
     tradeNotesInput: document.getElementById('trade-notes'),
     saveTradeBtn: document.getElementById('saveTradeBtn'),
+    clearJournalFormBtn: document.getElementById('clearJournalFormBtn'),
+    clearJournalBtn: document.getElementById('clearJournalBtn'),
+
+    // News Feed (Placeholder)
+    newsFeedContainer: document.getElementById('news-feed'),
 };
 
 // --- Constants ---
@@ -89,32 +89,32 @@ const SENTIMENT_STYLES = {
     'STRONG BUY': { className: 'strong-buy', msg: '📈 STRONG BUY' },
     'STRONG SELL': { className: 'strong-sell', msg: '📉 STRONG SELL' },
     'BUY RETRACEMENT EXPECTED': { className: 'buy-retracement', msg: '↘️ BUY RETRACEMENT' },
-    'SELL RETRACEMENT EXPECTED': { className: 'sell-retracement', msg: '↗️ SELL RETRACEMENT' },
+    'SELL RETRACEMENT EXPECTED': { className: '↗️ SELL RETRACEMENT' },
     'NORMAL BUY': { className: 'normal-buy', msg: '✅ NORMAL BUY' },
     'NORMAL SELL': { className: 'normal-sell', msg: '❌ NORMAL SELL' },
     'BOTH ARE EQUAL': { className: 'neutral', msg: '⚖️ NEUTRAL' },
     'NO SIGNAL': { className: 'no-signal', msg: 'NO SIGNAL' }
 };
 
-const TIMEZONE_CONFIG = {
-    'America/New_York': DOMElements.newYorkTime, // EST/EDT
-    'Europe/London': DOMElements.londonTime,     // GMT/BST
-    'Asia/Kolkata': DOMElements.indiaTime       // IST
-    // Add more UTC timezones as needed:
-    // 'Asia/Tokyo': document.getElementById('tokyo-time'),
-    // 'Australia/Sydney': document.getElementById('sydney-time'),
-    // 'Europe/Paris': document.getElementById('paris-time'),
-    // 'America/Los_Angeles': document.getElementById('los-angeles-time')
-};
+const TIMEZONE_CITIES = [
+    { label: 'IST', timezone: 'Asia/Kolkata', icon: 'fas fa-sun' },
+    { label: 'LDN', timezone: 'Europe/London', icon: 'fas fa-globe-europe' },
+    { label: 'NY', timezone: 'America/New_York', icon: 'fas fa-city' },
+    { label: 'TYO', timezone: 'Asia/Tokyo', icon: 'fas fa-yen-sign' },
+    { label: 'SYD', timezone: 'Australia/Sydney', icon: 'fas fa-globe-asia' },
+    { label: 'UTC', timezone: 'UTC', icon: 'fas fa-globe' } // UTC is a valid timezone name
+];
 
 // --- Initialization ---
 document.addEventListener('DOMContentLoaded', initializeApp);
 
 function initializeApp() {
     loadStateFromLocalStorage();
+    renderTimezoneClocks(); // Render timezone elements once
     updateAllDisplays();
     setupEventListeners();
     startClocks();
+    DOMElements.notesParamsContent.classList.add('active'); // Start expanded
 }
 
 function loadStateFromLocalStorage() {
@@ -125,8 +125,8 @@ function loadStateFromLocalStorage() {
     journalEntries = JSON.parse(localStorage.getItem(STORAGE_KEYS.JOURNAL_ENTRIES)) || [];
 
     const storedParams = JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_PARAMETERS));
-    if (storedParams) {
-        customParameters = storedParams; // Overwrite defaults if stored
+    if (storedParams && storedParams.length > 0) { // Only load if not empty
+        customParameters = storedParams;
     }
 }
 
@@ -153,16 +153,16 @@ function updateAnalysisDisplay() {
     const percentage = total ? ((difference / total) * 100).toFixed(2) : 0;
 
     let conclusion = '';
-    if (buyCount === sellCount) {
+    if (buyCount === sellCount && total === 0) {
+        conclusion = 'NO SIGNAL';
+    } else if (buyCount === sellCount) {
         conclusion = 'BOTH ARE EQUAL';
-    } else if (percentage <= 25 && total > 0) { // Only apply retracement logic if there's significant total
+    } else if (percentage <= 25) {
         conclusion = buyCount > sellCount ? 'BUY RETRACEMENT EXPECTED' : 'SELL RETRACEMENT EXPECTED';
     } else if (percentage > 66) {
         conclusion = buyCount > sellCount ? 'STRONG BUY' : 'STRONG SELL';
-    } else if (total > 0) { // If total is not zero but not strong, it's normal
+    } else {
         conclusion = buyCount > sellCount ? 'NORMAL BUY' : 'NORMAL SELL';
-    } else { // No entries yet
-        conclusion = 'NO SIGNAL';
     }
 
     DOMElements.buyCountDisplay.innerText = buyCount.toFixed(1);
@@ -172,17 +172,17 @@ function updateAnalysisDisplay() {
     DOMElements.conclusionText.innerText = `Conclusion: ${conclusion}`;
 
     const style = SENTIMENT_STYLES[conclusion] || SENTIMENT_STYLES['NO SIGNAL'];
-    DOMElements.sentimentBadge.className = `sentiment-badge ${style.className} stock-badge`;
+    DOMElements.sentimentBadge.className = `sentiment-badge ${style.className}`;
     DOMElements.sentimentBadge.innerText = style.msg;
 }
 
 function updateHistoryDisplay() {
     if (historyList.length === 0) {
-        DOMElements.historyContainer.innerHTML = '<p class="text-center text-text-muted py-4">No entries yet.</p>';
+        DOMElements.historyContainer.innerHTML = '<p class="text-center text-text-dark py-4">No entries yet.</p>';
         return;
     }
     DOMElements.historyContainer.innerHTML = historyList.map(entry =>
-        `<div class="history-item antique-item fade-enter">
+        `<div class="history-item fade-enter">
             <div class="history-data">${entry}</div>
         </div>`
     ).join('');
@@ -197,22 +197,20 @@ function updateHistoryWithNotesDisplay(searchTerm = '') {
     );
 
     if (filteredHistory.length === 0 && searchTerm === '') {
-        DOMElements.historyWithNotesContainer.innerHTML = '<p class="text-center text-text-muted py-4">No detailed entries yet.</p>';
+        DOMElements.historyWithNotesContainer.innerHTML = '<p class="text-center text-text-dark py-4">No detailed entries yet.</p>';
         return;
     } else if (filteredHistory.length === 0 && searchTerm !== '') {
-        DOMElements.historyWithNotesContainer.innerHTML = '<p class="text-center text-text-muted py-4">No matching entries found.</p>';
+        DOMElements.historyWithNotesContainer.innerHTML = '<p class="text-center text-text-dark py-4">No matching entries found.</p>';
         return;
     }
 
     DOMElements.historyWithNotesContainer.innerHTML = filteredHistory.map(entry => `
-        <div class="history-item antique-item">
+        <div class="history-item">
             <div class="history-timestamp">${entry.timestamp}</div>
-            <div class="note-input-group">
-                <label for="note-title-${entry.id}">Title:</label>
+            <div class="history-title-input-group">
                 <input type="text"
-                    id="note-title-${entry.id}"
-                    class="antique-input"
-                    placeholder="Add a title for this entry..."
+                    class="history-title-input"
+                    placeholder="Entry Title (e.g., 'Pre-Earnings Analysis')"
                     data-entry-id="${entry.id}"
                     data-field="noteTitle"
                     value="${entry.noteTitle || ''}"
@@ -221,17 +219,14 @@ function updateHistoryWithNotesDisplay(searchTerm = '') {
             <div class="history-data">
                 ${entry.conclusion} | BUYS: ${entry.buyCount.toFixed(1)} | SELLS: ${entry.sellCount.toFixed(1)} | %DIFF: ${entry.percentage}%
             </div>
-            <div class="note-input-group">
-                <label for="note-content-${entry.id}">Notes:</label>
-                <textarea
-                    id="note-content-${entry.id}"
-                    class="antique-input"
-                    placeholder="Add your trading notes here..."
-                    data-entry-id="${entry.id}"
-                    data-field="note"
-                    onchange="updateNoteField(${entry.id}, 'note', this.value)"
-                >${entry.note}</textarea>
-            </div>
+            <textarea
+                class="text-input"
+                rows="3"
+                placeholder="Add your trading notes for this entry..."
+                data-entry-id="${entry.id}"
+                data-field="note"
+                onchange="updateNoteField(${entry.id}, 'note', this.value)"
+            >${entry.note || ''}</textarea>
         </div>
     `).join('');
 }
@@ -246,11 +241,11 @@ function updateNoteField(entryId, field, value) {
 
 function updateJournalDisplay() {
     if (journalEntries.length === 0) {
-        DOMElements.journalEntriesContainer.innerHTML = '<p class="text-center text-text-muted py-4">No trades logged yet.</p>';
+        DOMElements.journalEntriesContainer.innerHTML = '<p class="text-center text-text-dark py-4">No trades logged yet.</p>';
         return;
     }
     DOMElements.journalEntriesContainer.innerHTML = journalEntries.map(entry => `
-        <div class="journal-item antique-item">
+        <div class="journal-item">
             <div class="journal-entry-header">
                 <span class="journal-entry-instrument">${entry.instrument || 'N/A'}</span>
                 <span class="journal-entry-date">${entry.date || 'N/A'}</span>
@@ -258,7 +253,7 @@ function updateJournalDisplay() {
             <div class="journal-entry-price-pnl">
                 <span>Entry: ${entry.entryPrice !== null ? entry.entryPrice.toFixed(2) : 'N/A'}</span>
                 <span>Exit: ${entry.exitPrice !== null ? entry.exitPrice.toFixed(2) : 'N/A'}</span>
-                <span style="color: ${entry.pnl >= 0 ? 'var(--color-accent-green-stock)' : 'var(--color-accent-red-stock)'};">P/L: $${entry.pnl !== null ? entry.pnl.toFixed(2) : 'N/A'}</span>
+                <span style="color: ${entry.pnl >= 0 ? 'var(--color-accent-green)' : 'var(--color-accent-red)'};">P/L: $${entry.pnl !== null ? entry.pnl.toFixed(2) : 'N/A'}</span>
             </div>
             <div class="journal-entry-notes">${entry.notes || ''}</div>
         </div>
@@ -267,16 +262,16 @@ function updateJournalDisplay() {
 
 function updateParametersDisplay() {
     if (customParameters.length === 0) {
-        DOMElements.parameterGrid.innerHTML = '<p class="text-center text-text-muted py-4 col-span-full">No parameters added yet.</p>';
+        DOMElements.parameterGrid.innerHTML = '<p class="text-center text-text-dark py-4 col-span-full">No parameters added yet.</p>';
         return;
     }
     DOMElements.parameterGrid.innerHTML = customParameters.map(param => `
-        <div class="parameter-item antique-item">
+        <div class="parameter-item">
             <button class="delete-param-btn" data-param-id="${param.id}" title="Remove Parameter"><i class="fas fa-times"></i></button>
-            <div class="parameter-value text-accent-yellow-stock">${param.value.toFixed(1)}</div>
-            <div class="parameter-label stock-label">
+            <div class="parameter-value text-accent-yellow">${param.value.toFixed(1)}</div>
+            <div class="parameter-label">
                 ${param.label}
-                ${param.subText ? `<span class="sub-text stock-sub-text">${param.subText}</span>` : ''}
+                ${param.subText ? `<span class="sub-text">${param.subText}</span>` : ''}
             </div>
         </div>
     `).join('');
@@ -296,16 +291,16 @@ function updateAllDisplays() {
     updateHistoryDisplay();
     updateJournalDisplay();
     updateParametersDisplay(); // Initial display of parameters
+    // No specific update for news as it's static/placeholder
 }
 
 // --- Action Handlers ---
 function recordAction(type, change) {
     if (type === 'buy') {
-        selectedBuy = Math.max(0, selectedBuy + change); // Ensure non-negative
+        selectedBuy = Math.max(0, parseFloat((selectedBuy + change).toFixed(1))); // Ensure non-negative and correct precision
     } else if (type === 'sell') {
-        selectedSell = Math.max(0, selectedSell + change); // Ensure non-negative
+        selectedSell = Math.max(0, parseFloat((selectedSell + change).toFixed(1))); // Ensure non-negative and correct precision
     }
-    // For Undo: Store what action just happened
     selectionStack.push({ type: type, change: change });
     updateSelectionDisplay();
 }
@@ -313,11 +308,9 @@ function recordAction(type, change) {
 function handleInputChanges(type, event) {
     let value = parseFloat(event.target.value);
     if (isNaN(value)) value = 0;
+    value = parseFloat(value.toFixed(1)); // Ensure precision
 
     // Store original pending value for undo if direct input
-    // This is more complex for undo, as a single input might replace multiple +0.5s.
-    // For simplicity with the existing undo stack, let's treat direct input as a 'reset' of selectedBuy/Sell
-    // to that value, and then add it to the stack as a single 'input' action.
     if (type === 'buy') {
         const oldValue = selectedBuy;
         selectedBuy = value;
@@ -336,9 +329,9 @@ function undoLastAction() {
     if (!lastAction) return;
 
     if (lastAction.type === 'buy') {
-        selectedBuy = Math.max(0, selectedBuy - lastAction.change);
+        selectedBuy = Math.max(0, parseFloat((selectedBuy - lastAction.change).toFixed(1)));
     } else if (lastAction.type === 'sell') {
-        selectedSell = Math.max(0, selectedSell - lastAction.change);
+        selectedSell = Math.max(0, parseFloat((selectedSell - lastAction.change).toFixed(1)));
     } else if (lastAction.type === 'input_buy') {
         selectedBuy = lastAction.original;
     } else if (lastAction.type === 'input_sell') {
@@ -365,16 +358,16 @@ function submitEntries() {
     const percentage = total ? ((difference / total) * 100).toFixed(2) : 0;
 
     let conclusion = '';
-    if (buyCount === sellCount) {
+    if (buyCount === sellCount && total === 0) {
+        conclusion = 'NO SIGNAL';
+    } else if (buyCount === sellCount) {
         conclusion = 'BOTH ARE EQUAL';
-    } else if (percentage <= 25 && total > 0) {
+    } else if (percentage <= 25) {
         conclusion = buyCount > sellCount ? 'BUY RETRACEMENT EXPECTED' : 'SELL RETRACEMENT EXPECTED';
     } else if (percentage > 66) {
         conclusion = buyCount > sellCount ? 'STRONG BUY' : 'STRONG SELL';
-    } else if (total > 0) {
-        conclusion = buyCount > sellCount ? 'NORMAL BUY' : 'NORMAL SELL';
     } else {
-        conclusion = 'NO SIGNAL';
+        conclusion = buyCount > sellCount ? 'NORMAL BUY' : 'NORMAL SELL';
     }
 
     const historyEntry = `${timestamp} | ${conclusion} | BUYS: ${buyCount.toFixed(1)} | SELLS: ${sellCount.toFixed(1)} | %DIFF: ${percentage}%`;
@@ -469,17 +462,6 @@ function stopHold() {
     clearInterval(holdInterval);
 }
 
-// --- Modal Functions ---
-function openModal(modalElement) {
-    modalElement.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-}
-
-function closeModal(modalElement) {
-    modalElement.style.display = 'none';
-    document.body.style.overflow = 'auto';
-}
-
 // --- Parameter Management ---
 function addParameter() {
     const label = DOMElements.newParamLabelInput.value.trim();
@@ -496,7 +478,7 @@ function addParameter() {
     const newParam = {
         id: 'custom-' + Date.now(), // Unique ID
         label: label,
-        value: value,
+        value: parseFloat(value.toFixed(1)), // Ensure precision
         subText: null // Custom parameters don't have subText by default
     };
 
@@ -533,9 +515,9 @@ function saveTrade() {
     const newTrade = {
         id: Date.now(),
         instrument: instrument,
-        entryPrice: isNaN(entryPrice) ? null : entryPrice,
-        exitPrice: isNaN(exitPrice) ? null : exitPrice,
-        pnl: isNaN(pnl) ? null : pnl,
+        entryPrice: isNaN(entryPrice) ? null : parseFloat(entryPrice.toFixed(2)),
+        exitPrice: isNaN(exitPrice) ? null : parseFloat(exitPrice.toFixed(2)),
+        pnl: isNaN(pnl) ? null : parseFloat(pnl.toFixed(2)),
         date: date,
         notes: notes
     };
@@ -547,7 +529,6 @@ function saveTrade() {
     updateJournalDisplay();
     saveStateToLocalStorage();
     clearJournalForm();
-    closeModal(DOMElements.journalLogModal);
 }
 
 function clearJournalForm() {
@@ -604,31 +585,31 @@ function setupEventListeners() {
     DOMElements.undoLastActionBtn.addEventListener('click', undoLastAction);
     DOMElements.clearAllDataBtn.addEventListener('click', clearAllData); // Global clear button
 
-    // Info/Parameters Modal
-    DOMElements.openInfoModalBtn.addEventListener('click', () => {
-        updateHistoryWithNotesDisplay(); // Update notes with search bar
-        updateParametersDisplay(); // Ensure parameters are up-to-date
-        openModal(DOMElements.infoModal);
+    // Collapsible Notes & Parameters Section
+    DOMElements.toggleNotesParamsBtn.addEventListener('click', () => {
+        DOMElements.notesParamsContent.classList.toggle('active');
     });
-    DOMElements.closeInfoModalBtn.addEventListener('click', () => closeModal(DOMElements.infoModal));
+
+    // Note Search
     DOMElements.noteSearchInput.addEventListener('input', (e) => updateHistoryWithNotesDisplay(e.target.value));
 
     // Parameter addition
     DOMElements.addParameterBtn.addEventListener('click', addParameter);
 
-    // Trading Journal Modal
-    DOMElements.openJournalModalBtn.addEventListener('click', () => {
-        clearJournalForm(); // Reset form when opening
-        openModal(DOMElements.journalLogModal);
-    });
-    DOMElements.closeJournalLogModalBtn.addEventListener('click', () => closeModal(DOMElements.journalLogModal));
+    // Trading Journal buttons
     DOMElements.saveTradeBtn.addEventListener('click', saveTrade);
+    DOMElements.clearJournalFormBtn.addEventListener('click', clearJournalForm);
     DOMElements.clearJournalBtn.addEventListener('click', clearJournal);
 
     // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-            return; // Don't trigger shortcuts if typing in an input field
+            if (e.key === 'Escape' && DOMElements.notesParamsContent.classList.contains('active')) {
+                // Allow escape to close collapsible if active and user is in an input
+                DOMElements.notesParamsContent.classList.remove('active');
+                e.target.blur(); // Remove focus from input
+            }
+            return; // Don't trigger other shortcuts if typing in an input field
         }
 
         if (e.key === 'Enter') {
@@ -639,35 +620,12 @@ function setupEventListeners() {
             recordAction('sell', 0.5);
         } else if (e.key.toLowerCase() === 'r') {
             resetCurrentCounts();
-        } else if (e.key.toLowerCase() === 'i') { // 'I' for Info/Parameters
-            if (DOMElements.infoModal.style.display === 'flex') {
-                closeModal(DOMElements.infoModal);
-            } else {
-                openModal(DOMElements.infoModal);
+        } else if (e.key.toLowerCase() === 'i') { // 'I' for Info/Parameters section toggle
+            DOMElements.notesParamsContent.classList.toggle('active');
+        } else if (e.key === 'Escape') { // Close collapsible with escape
+            if (DOMElements.notesParamsContent.classList.contains('active')) {
+                DOMElements.notesParamsContent.classList.remove('active');
             }
-        } else if (e.key.toLowerCase() === 'l') { // 'L' for Log Trade
-            if (DOMElements.journalLogModal.style.display === 'flex') {
-                closeModal(DOMElements.journalLogModal);
-            } else {
-                openModal(DOMElements.journalLogModal);
-            }
-        } else if (e.key === 'Escape') {
-            if (DOMElements.infoModal.style.display === 'flex') {
-                closeModal(DOMElements.infoModal);
-            }
-            if (DOMElements.journalLogModal.style.display === 'flex') {
-                closeModal(DOMElements.journalLogModal);
-            }
-        }
-    });
-
-    // Close modals when clicking outside
-    window.addEventListener('click', function(event) {
-        if (event.target === DOMElements.infoModal) {
-            closeModal(DOMElements.infoModal);
-        }
-        if (event.target === DOMElements.journalLogModal) {
-            closeModal(DOMElements.journalLogModal);
         }
     });
 
@@ -676,16 +634,28 @@ function setupEventListeners() {
 }
 
 // --- Live Clocks ---
+function renderTimezoneClocks() {
+    DOMElements.timezoneClocksContainer.innerHTML = TIMEZONE_CITIES.map(tz => `
+        <div class="time-zone">
+            <span class="time-label"><i class="${tz.icon}"></i> ${tz.label}:</span>
+            <span class="time-value" id="${tz.label.toLowerCase().replace(/[^a-z0-9]/g, '')}-time"></span>
+        </div>
+    `).join('');
+}
+
 function updateClocks() {
     const now = new Date();
 
-    // Live Clock (Local Time)
+    // Local Live Clock
     DOMElements.liveClock.innerText = now.toLocaleTimeString();
 
     // Specific Timezones
-    for (const [timezone, element] of Object.entries(TIMEZONE_CONFIG)) {
-        element.innerText = now.toLocaleTimeString('en-US', { timeZone: timezone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-    }
+    TIMEZONE_CITIES.forEach(tz => {
+        const element = document.getElementById(`${tz.label.toLowerCase().replace(/[^a-z0-9]/g, '')}-time`);
+        if (element) {
+            element.innerText = now.toLocaleTimeString('en-US', { timeZone: tz.timezone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        }
+    });
 }
 
 function startClocks() {

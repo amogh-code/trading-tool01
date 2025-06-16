@@ -5,132 +5,181 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QuantumFlow Analyzer</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-    <div class="app-container">
-        <header class="app-header">
+<body class="antique-bg">
+    <div class="app-container antique-border">
+        <header class="app-header antique-header-bg">
             <div class="app-title-wrapper">
-                <h1 class="app-title">QuantumFlow Analyzer</h1>
-                <p class="app-subtitle">Intuitive Buy/Sell Sentiment Analysis</p>
+                <h1 class="app-title stock-title">QuantumFlow Analyzer</h1>
+                <p class="app-subtitle stock-subtitle">Your Elegant Market Sentiment Dashboard</p>
             </div>
             <div class="header-right">
-                <div class="live-clock" id="live-clock"></div>
-                <button class="btn btn-secondary btn-icon" id="clearHistoryBtn" title="Clear All History">
-                    <i class="fas fa-trash-alt"></i>
+                <div class="time-info">
+                    <div class="time-zone"><span class="time-label"><i class="fas fa-city"></i> NY:</span> <span id="new-york-time" class="time-value"></span></div>
+                    <div class="time-zone"><span class="time-label"><i class="fas fa-globe-europe"></i> LDN:</span> <span id="london-time" class="time-value"></span></div>
+                    <div class="time-zone"><span class="time-label"><i class="fas fa-sun"></i> IST:</span> <span id="india-time" class="time-value"></span></div>
+                    </div>
+                <div class="live-clock antique-clock" id="live-clock"></div>
+                <button class="btn btn-secondary btn-icon" id="clearAllDataBtn" title="Clear All Data (Counts, History, Journal)">
+                    <i class="fas fa-eraser"></i>
                 </button>
             </div>
         </header>
 
         <main class="main-content">
-            <section class="section-card actions-section">
-                <h2 class="section-title">Record Flow</h2>
+            <section class="section-card actions-section antique-card">
+                <h2 class="section-title stock-title"><i class="fas fa-chart-line"></i> Trade Flow Input</h2>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label for="buy-input" class="input-label stock-label"><i class="fas fa-long-arrow-alt-up text-accent-green-stock"></i> Current Buy Flow:</label>
+                        <div class="input-controls">
+                            <button class="btn btn-action btn-deduct" data-action="buy" data-change="-0.5" data-direction="down">-0.5</button>
+                            <input type="number" id="buy-input" class="value-input antique-input" value="0" step="0.5">
+                            <button class="btn btn-action btn-increment" data-action="buy" data-change="0.5" data-direction="up">+0.5</button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="sell-input" class="input-label stock-label"><i class="fas fa-long-arrow-alt-down text-accent-red-stock"></i> Current Sell Flow:</label>
+                        <div class="input-controls">
+                            <button class="btn btn-action btn-deduct" data-action="sell" data-change="-0.5" data-direction="down">-0.5</button>
+                            <input type="number" id="sell-input" class="value-input antique-input" value="0" step="0.5">
+                            <button class="btn btn-action btn-increment" data-action="sell" data-change="0.5" data-direction="up">+0.5</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="button-grid">
-                    <button class="btn btn-action btn-buy" data-action="buy">
-                        <i class="fas fa-plus-circle"></i> Buy (+0.5)
+                    <button class="btn btn-primary btn-submit stock-button" id="submitEntriesBtn">
+                        <i class="fas fa-check-circle"></i> Submit Flow
                     </button>
-                    <button class="btn btn-action btn-sell" data-action="sell">
-                        <i class="fas fa-minus-circle"></i> Sell (+0.5)
+                    <button class="btn btn-secondary stock-button" id="resetCurrentBtn">
+                        <i class="fas fa-sync-alt"></i> Reset Flow
                     </button>
-                    <button class="btn btn-primary btn-submit" id="submitEntriesBtn">
-                        <i class="fas fa-arrow-alt-circle-right"></i> Submit Entry
-                    </button>
-                    <button class="btn btn-secondary" id="resetCountsBtn">
-                        <i class="fas fa-redo"></i> Reset Current
-                    </button>
-                    <button class="btn btn-info" id="undoLastActionBtn">
+                    <button class="btn btn-info stock-button" id="undoLastActionBtn">
                         <i class="fas fa-undo"></i> Undo
-                    </button>
-                    <button class="btn btn-note" id="openNoteModalBtn">
-                        <i class="fas fa-sticky-note"></i> Notes & Params
                     </button>
                 </div>
                 <div class="pending-selections">
                     <div class="selection-item">
-                        <span id="selected-buy" class="selection-value text-green">0.0</span>
-                        <span class="selection-label">Pending Buys</span>
+                        <span id="selected-buy" class="selection-value text-accent-green-stock">0.0</span>
+                        <span class="selection-label stock-label">Pending Buys</span>
                     </div>
                     <div class="selection-item">
-                        <span id="selected-sell" class="selection-value text-red">0.0</span>
-                        <span class="selection-label">Pending Sells</span>
+                        <span id="selected-sell" class="selection-value text-accent-red-stock">0.0</span>
+                        <span class="selection-label stock-label">Pending Sells</span>
                     </div>
                 </div>
             </section>
 
-            <section class="section-card analysis-section">
-                <h2 class="section-title">Current Flow Analysis</h2>
+            <section class="section-card analysis-section antique-card">
+                <h2 class="section-title stock-title"><i class="fas fa-chart-pie"></i> Market Sentiment</h2>
                 <div class="analysis-grid">
-                    <div class="analysis-item">
-                        <span id="buy-count" class="analysis-value text-green">0.0</span>
-                        <span class="analysis-label">Total Buys</span>
+                    <div class="analysis-item antique-item">
+                        <span id="buy-count" class="analysis-value text-accent-green-stock">0.0</span>
+                        <span class="analysis-label stock-label">Total Buys</span>
                     </div>
-                    <div class="analysis-item">
-                        <span id="sell-count" class="analysis-value text-red">0.0</span>
-                        <span class="analysis-label">Total Sells</span>
+                    <div class="analysis-item antique-item">
+                        <span id="sell-count" class="analysis-value text-accent-red-stock">0.0</span>
+                        <span class="analysis-label stock-label">Total Sells</span>
                     </div>
-                    <div class="analysis-item">
-                        <span id="difference" class="analysis-value text-yellow">0.0</span>
-                        <span class="analysis-label">Difference</span>
+                    <div class="analysis-item antique-item">
+                        <span id="difference" class="analysis-value text-accent-gold">0.0</span>
+                        <span class="analysis-label stock-label">Difference</span>
                     </div>
-                    <div class="analysis-item">
-                        <span id="percentage" class="analysis-value text-purple">0%</span>
-                        <span class="analysis-label">Percentage</span>
+                    <div class="analysis-item antique-item">
+                        <span id="percentage" class="analysis-value text-accent-blue">0%</span>
+                        <span class="analysis-label stock-label">Influence %</span>
                     </div>
                 </div>
-                <div class="analysis-conclusion">
-                    <p class="conclusion-text" id="conclusion">Conclusion: Awaiting Data</p>
-                    <span class="sentiment-badge" id="sentiment-badge">No Signal</span>
+                <div class="analysis-conclusion antique-conclusion">
+                    <p class="conclusion-text stock-conclusion" id="conclusion">Conclusion: Awaiting Data</p>
+                    <span class="sentiment-badge stock-badge" id="sentiment-badge">No Signal</span>
                 </div>
             </section>
 
-            <section class="section-card history-section">
-                <h2 class="section-title">Recent Entries <span class="text-xs text-gray-500">(Last 30)</span></h2>
-                <div id="history" class="history-list scrollbar-thin">
-                    <p class="text-center text-gray-500 py-4">No entries yet.</p>
+            <section class="section-card history-section antique-card">
+                <h2 class="section-title stock-title"><i class="fas fa-history"></i> Recent Flows <span class="text-xs text-text-muted">(Last 30)</span></h2>
+                <div id="history" class="history-list antique-scrollbar">
+                    <p class="text-center text-text-muted py-4">No entries yet.</p>
+                </div>
+            </section>
+
+            <section class="section-card journal-section antique-card">
+                <h2 class="section-title stock-title"><i class="fas fa-book"></i> Trading Journal</h2>
+                <div class="journal-controls">
+                    <button class="btn btn-primary stock-button" id="openJournalModalBtn"><i class="fas fa-plus"></i> Log New Trade</button>
+                    <button class="btn btn-secondary stock-button" id="clearJournalBtn"><i class="fas fa-trash-alt"></i> Clear Journal</button>
+                </div>
+                <div id="journal-entries" class="journal-list antique-scrollbar">
+                    <p class="text-center text-text-muted py-4">No trades logged yet.</p>
                 </div>
             </section>
         </main>
     </div>
 
-    <div id="noteModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" id="closeModalBtn">&times;</span>
-            <h2 class="modal-title">Trading Parameters & Notes</h2>
+    <div id="infoModal" class="modal">
+        <div class="modal-content antique-modal">
+            <span class="close-button antique-close" id="closeInfoModalBtn">&times;</span>
+            <h2 class="modal-title stock-title">Trading Parameters & Notes</h2>
 
-            <div class="parameter-grid">
-                <div class="parameter-item">
-                    <div class="parameter-value">1.0</div>
-                    <div class="parameter-label">BTT <i class="fas fa-info-circle tooltip" title="Base Trend Type"></i></div>
+            <h3 class="modal-subtitle stock-title"><i class="fas fa-sliders-h"></i> Custom Parameters</h3>
+            <div id="parameter-grid" class="parameter-grid">
                 </div>
-                <div class="parameter-item">
-                    <div class="parameter-value">1.0</div>
-                    <div class="parameter-label">FUTLEVEL <i class="fas fa-info-circle tooltip" title="Future Level Impact"></i></div>
-                </div>
-                <div class="parameter-item">
-                    <div class="parameter-value">1.0 <span class="sub-text">(0.5 for weak signs)</span></div>
-                    <div class="parameter-label">VSA <i class="fas fa-info-circle tooltip" title="Volume Spread Analysis"></i></div>
-                </div>
-                <div class="parameter-item">
-                    <div class="parameter-value">1.0 <span class="sub-text">(0.5 for derivations)</span></div>
-                    <div class="parameter-label">VLEVEL <i class="fas fa-info-circle tooltip" title="Volatility Level"></i></div>
-                </div>
-                <div class="parameter-item">
-                    <div class="parameter-value">0.5</div>
-                    <div class="parameter-label">WFUTLEVEL <i class="fas fa-info-circle tooltip" title="Weak Future Level Impact"></i></div>
-                </div>
-                <div class="parameter-item">
-                    <div class="parameter-value">1.0 <span class="sub-text">(0.5=Down TF + 0.5=Up TF)</span></div>
-                    <div class="parameter-label">MTF CONFIRMATION <i class="fas fa-info-circle tooltip" title="Multi-Timeframe Confirmation"></i></div>
-                </div>
+            <div class="parameter-add">
+                <input type="text" id="new-param-label" class="antique-input" placeholder="New Parameter Label (e.g., 'Risk Factor')">
+                <input type="number" id="new-param-value" class="antique-input" value="1.0" step="0.1">
+                <button class="btn btn-secondary stock-button" id="addParameterBtn"><i class="fas fa-plus-circle"></i> Add Parameter</button>
             </div>
 
-            <h3 class="modal-subtitle">Entry History with Notes</h3>
-            <div id="historyWithNotes" class="history-detail-list scrollbar-thin">
-                <p class="text-center text-gray-500 py-4">No detailed entries yet.</p>
+            <h3 class="modal-subtitle stock-title"><i class="fas fa-clipboard-list"></i> Detailed Entry History</h3>
+            <input type="text" id="note-search" class="antique-input search-input" placeholder="Search notes by title or content...">
+            <div id="historyWithNotes" class="history-detail-list antique-scrollbar">
+                <p class="text-center text-text-muted py-4">No detailed entries yet.</p>
             </div>
         </div>
+    </div>
+
+    <div id="journalLogModal" class="modal">
+        <div class="modal-content antique-modal">
+            <span class="close-button antique-close" id="closeJournalLogModalBtn">&times;</span>
+            <h2 class="modal-title stock-title">Log New Trade</h2>
+
+            <div class="journal-form">
+                <div class="form-group">
+                    <label for="trade-instrument" class="stock-label">Instrument:</label>
+                    <input type="text" id="trade-instrument" class="antique-input" placeholder="e.g., EUR/USD, SPY, TSLA">
+                </div>
+                <div class="form-group">
+                    <label for="trade-entry-price" class="stock-label">Entry Price:</label>
+                    <input type="number" id="trade-entry-price" class="antique-input" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="trade-exit-price" class="stock-label">Exit Price:</label>
+                    <input type="number" id="trade-exit-price" class="antique-input" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="trade-pnl" class="stock-label">P/L ($):</label>
+                    <input type="number" id="trade-pnl" class="antique-input" step="0.01" placeholder="Profit or Loss">
+                </div>
+                <div class="form-group">
+                    <label for="trade-date" class="stock-label">Date:</label>
+                    <input type="date" id="trade-date" class="antique-input">
+                </div>
+                <div class="form-group">
+                    <label for="trade-notes" class="stock-label">Notes:</label>
+                    <textarea id="trade-notes" class="antique-input" rows="4" placeholder="Key observations, reasons for trade, outcome..."></textarea>
+                </div>
+                <button class="btn btn-primary stock-button" id="saveTradeBtn"><i class="fas fa-save"></i> Save Trade</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed-bottom-right">
+        <button class="btn btn-note btn-circle-lg stock-button" id="openInfoModalBtn" title="View Parameters & Notes">
+            <i class="fas fa-info"></i>
+        </button>
     </div>
 
     <script src="js/script.js"></script>

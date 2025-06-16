@@ -22,6 +22,7 @@ const DOMElements = {
     liveClock: document.getElementById('live-clock'),
     timezoneClocksContainer: document.getElementById('timezone-clocks'),
     clearAllDataBtn: document.getElementById('clearAllDataBtn'),
+    aboutBtn: document.querySelector('.btn-about'), // Select the new About button
 
     // Input & Actions
     buyInput: document.getElementById('buy-input'),
@@ -41,6 +42,7 @@ const DOMElements = {
     percentageDisplay: document.getElementById('percentage'),
     conclusionText: document.getElementById('conclusion'),
     sentimentBadge: document.getElementById('sentiment-badge'),
+    analysisConclusionArea: document.getElementById('analysis-conclusion-area'), // New ID to target for animation
 
     // Recent Flows (History)
     historyContainer: document.getElementById('history'),
@@ -89,7 +91,7 @@ const SENTIMENT_STYLES = {
     'STRONG BUY': { className: 'strong-buy', msg: '📈 STRONG BUY' },
     'STRONG SELL': { className: 'strong-sell', msg: '📉 STRONG SELL' },
     'BUY RETRACEMENT EXPECTED': { className: 'buy-retracement', msg: '↘️ BUY RETRACEMENT' },
-    'SELL RETRACEMENT EXPECTED': { className: '↗️ SELL RETRACEMENT' },
+    'SELL RETRACEMENT EXPECTED': { className: 'sell-retracement', msg: '↗️ SELL RETRACEMENT' }, // Corrected msg
     'NORMAL BUY': { className: 'normal-buy', msg: '✅ NORMAL BUY' },
     'NORMAL SELL': { className: 'normal-sell', msg: '❌ NORMAL SELL' },
     'BOTH ARE EQUAL': { className: 'neutral', msg: '⚖️ NEUTRAL' },
@@ -114,7 +116,7 @@ function initializeApp() {
     updateAllDisplays();
     setupEventListeners();
     startClocks();
-    DOMElements.notesParamsContent.classList.add('active'); // Start expanded
+    // DOMElements.notesParamsContent.classList.add('active'); // Start collapsed as per new requirement
 }
 
 function loadStateFromLocalStorage() {
@@ -174,6 +176,11 @@ function updateAnalysisDisplay() {
     const style = SENTIMENT_STYLES[conclusion] || SENTIMENT_STYLES['NO SIGNAL'];
     DOMElements.sentimentBadge.className = `sentiment-badge ${style.className}`;
     DOMElements.sentimentBadge.innerText = style.msg;
+
+    // Trigger highlight animation on the analysis conclusion area
+    DOMElements.analysisConclusionArea.classList.remove('highlight'); // Remove to re-trigger
+    void DOMElements.analysisConclusionArea.offsetWidth; // Trigger reflow
+    DOMElements.analysisConclusionArea.classList.add('highlight'); // Add to start animation
 }
 
 function updateHistoryDisplay() {
@@ -182,7 +189,7 @@ function updateHistoryDisplay() {
         return;
     }
     DOMElements.historyContainer.innerHTML = historyList.map(entry =>
-        `<div class="history-item fade-enter">
+        `<div class="history-item fade-in">
             <div class="history-data">${entry}</div>
         </div>`
     ).join('');
@@ -287,11 +294,10 @@ function updateParametersDisplay() {
 
 function updateAllDisplays() {
     updateSelectionDisplay();
-    updateAnalysisDisplay();
+    updateAnalysisDisplay(); // This ensures initial state is "No Signal" if counts are zero
     updateHistoryDisplay();
     updateJournalDisplay();
-    updateParametersDisplay(); // Initial display of parameters
-    // No specific update for news as it's static/placeholder
+    updateParametersDisplay();
 }
 
 // --- Action Handlers ---
@@ -311,13 +317,16 @@ function handleInputChanges(type, event) {
     value = parseFloat(value.toFixed(1)); // Ensure precision
 
     // Store original pending value for undo if direct input
+    // This replaces previous selections for simplicity on undo for direct input
     if (type === 'buy') {
         const oldValue = selectedBuy;
         selectedBuy = value;
+        // Mark as input change for undo, storing old value
         selectionStack.push({ type: 'input_buy', original: oldValue, new: value });
     } else if (type === 'sell') {
         const oldValue = selectedSell;
         selectedSell = value;
+        // Mark as input change for undo, storing old value
         selectionStack.push({ type: 'input_sell', original: oldValue, new: value });
     }
     updateSelectionDisplay();
@@ -398,7 +407,7 @@ function submitEntries() {
     selectedSell = 0;
     selectionStack = []; // Clear stack on successful submission
 
-    updateAllDisplays();
+    updateAllDisplays(); // This will trigger the conclusion area animation
     saveStateToLocalStorage();
 }
 
@@ -588,10 +597,16 @@ function setupEventListeners() {
     // Collapsible Notes & Parameters Section
     DOMElements.toggleNotesParamsBtn.addEventListener('click', () => {
         DOMElements.notesParamsContent.classList.toggle('active');
+        // If it's becoming active, ensure notes/params are rendered
+        if (DOMElements.notesParamsContent.classList.contains('active')) {
+            updateHistoryWithNotesDisplay(DOMElements.noteSearchInput.value);
+            updateParametersDisplay();
+            updateJournalDisplay(); // Also ensure journal is up-to-date
+        }
     });
 
     // Note Search
-    DOMElements.noteSearchInput.addEventListener('input', (e) => updateHistoryWithNotesDisplay(e.target.value));
+    DOMEElements.noteSearchInput.addEventListener('input', (e) => updateHistoryWithNotesDisplay(e.target.value));
 
     // Parameter addition
     DOMElements.addParameterBtn.addEventListener('click', addParameter);
@@ -605,7 +620,6 @@ function setupEventListeners() {
     document.addEventListener('keydown', function(e) {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
             if (e.key === 'Escape' && DOMElements.notesParamsContent.classList.contains('active')) {
-                // Allow escape to close collapsible if active and user is in an input
                 DOMElements.notesParamsContent.classList.remove('active');
                 e.target.blur(); // Remove focus from input
             }

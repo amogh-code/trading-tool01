@@ -13,6 +13,8 @@
     --color-border-subtle: rgba(255, 255, 255, 0.08); /* Fainter lines, dividers */
     --color-border-accent-gold: #D4AF37; /* Muted Gold/Brass for titles/accents */
     --color-border-accent-bronze: #CD7F32; /* Bronze for elements */
+    --color-border-ticker: #A08040; /* Darker bronze for ticker border */
+
 
     /* Text Colors */
     --color-text-light: #F0F5F9;   /* Primary text, soft white */
@@ -68,27 +70,63 @@
     animation: resultHighlight 1.5s ease-out; /* Apply this animation */
 }
 
-/* --- Global Styles --- */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* Stock Ticker Animation */
+@keyframes tickerScroll {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
 }
 
+
+/* --- Global Styles --- */
 body {
+    margin: 0; /* Ensure no default body margin to fit ticker */
+    padding: 0; /* Ensure no default body padding */
     font-family: var(--font-family-body);
     color: var(--color-text-light);
     min-height: 100vh;
     display: flex;
+    flex-direction: column; /* Allow ticker to be on top */
     justify-content: center;
     align-items: center;
-    padding: 30px;
-    overflow-x: hidden;
     background: linear-gradient(135deg, var(--color-bg-darkest) 0%, var(--color-bg-primary) 100%);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden; /* Prevent horizontal scroll from ticker */
 }
+
+/* --- Stock Ticker --- */
+.stock-ticker-wrapper {
+    width: 100%;
+    background-color: var(--color-bg-tertiary);
+    border-bottom: 2px solid var(--color-border-ticker);
+    overflow: hidden; /* Hide content outside the ticker */
+    padding: 8px 0;
+    font-family: var(--font-family-mono);
+    font-size: 0.95rem;
+    color: var(--color-text-light);
+    white-space: nowrap; /* Keep all content on one line */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 100; /* Ensure it's on top */
+}
+
+.stock-ticker-content {
+    display: inline-block; /* Make content display as a single line */
+    padding-left: 100%; /* Start content off-screen to the right */
+    animation: tickerScroll 45s linear infinite; /* Adjust duration based on content length */
+}
+
+.ticker-item {
+    padding: 0 25px; /* Spacing between items */
+    display: inline-block;
+    color: var(--color-text-light);
+    font-weight: 600;
+}
+.ticker-item:nth-child(even) { color: var(--color-accent-green); } /* Example alternating colors */
+.ticker-item:nth-child(odd) { color: var(--color-accent-red); } /* Example alternating colors */
+/* More specific color based on value can be done with JS for real data */
+
 
 /* --- App Wrapper (for main content + news panel layout) --- */
 .app-wrapper {
@@ -97,8 +135,9 @@ body {
     gap: 30px; /* Space between main content and news */
     width: 100%;
     max-width: 1600px; /* Increased max-width to accommodate news panel */
-    min-height: 90vh;
+    min-height: calc(100vh - 40px); /* Adjust for ticker height */
     align-items: flex-start; /* Align content to top */
+    padding: 30px; /* Main padding around the grid */
 }
 
 /* --- Main App Container (Left Column) --- */

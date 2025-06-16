@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantumFlow Analyzer</title>
+    <!-- Google Fonts: Cormorant Garamond (titles) and Inter (body text) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <!-- Main Custom CSS Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="theme-dark-elegant">
+    <!-- Global Stock Ticker at the very top -->
+    <div class="stock-ticker-wrapper">
+        <div class="stock-ticker-content" id="stock-ticker-content">
+            <!-- Ticker items for scrolling news/data simulation -->
+            <span class="ticker-item">USD/INR: 83.52 <span class="text-green-plus">(+0.12)</span></span>
+            <span class="ticker-item">NIFTY 50: 23,567.80 <span class="text-green-plus">(+0.45%)</span></span>
+            <span class="ticker-item">GOLD: $2,332.50 <span class="text-red-minus">(-0.10%)</span></span>
+            <span class="ticker-item">CRUDE OIL: $81.25 <span class="text-green-plus">(+0.75%)</span></span>
+            <span class="ticker-item">Sensex: 77,543.22 <span class="text-green-plus">(+0.38%)</span></span>
+            <span class="ticker-item">DAX: 18,250.60 <span class="text-red-minus">(-0.22%)</span></span>
+            <span class="ticker-item">FTSE 100: 8,245.90 <span class="text-red-minus">(-0.05%)</span></span>
+            <span class="ticker-item">Dow Jones: 39,120.30 <span class="text-green-plus">(+0.15%)</span></span>
+            <span class="ticker-item">Nasdaq: 17,900.10 <span class="text-green-plus">(+0.65%)</span></span>
+            <span class="ticker-item">BITCOIN: $64,500 <span class="text-green-plus">(+1.2%)</span></span>
+            <span class="ticker-item">Ethereum: $3,500 <span class="text-green-plus">(+0.8%)</span></span>
+            <!-- Duplicated content for seamless looping -->
+            <span class="ticker-item">USD/INR: 83.52 <span class="text-green-plus">(+0.12)</span></span>
+            <span class="ticker-item">NIFTY 50: 23,567.80 <span class="text-green-plus">(+0.45%)</span></span>
+            <span class="ticker-item">GOLD: $2,332.50 <span class="text-red-minus">(-0.10%)</span></span>
+            <span class="ticker-item">CRUDE OIL: $81.25 <span class="text-green-plus">(+0.75%)</span></span>
+            <span class="ticker-item">Sensex: 77,543.22 <span class="text-green-plus">(+0.38%)</span></span>
+            <span class="ticker-item">DAX: 18,250.60 <span class="text-red-minus">(-0.22%)</span></span>
+            <span class="ticker-item">FTSE 100: 8,245.90 <span class="text-red-minus">(-0.05%)</span></span>
+            <span class="ticker-item">Dow Jones: 39,120.30 <span class="text-green-plus">(+0.15%)</span></span>
+            <span class="ticker-item">Nasdaq: 17,900.10 <span class="text-green-plus">(+0.65%)</span></span>
+            <span class="ticker-item">BITCOIN: $64,500 <span class="text-green-plus">(+1.2%)</span></span>
+            <span class="ticker-item">Ethereum: $3,500 <span class="text-green-plus">(+0.8%)</span></span>
+        </div>
+    </div>
+
+    <div class="app-wrapper"> <!-- Overall container for the main application and the news panel -->
+        <div class="app-container">
+            <!-- Header Section: Contains title, clocks, global action buttons, and tool navigation -->
+            <header class="app-header">
+                <div class="app-title-wrapper">
+                    <h1 class="app-title">QuantumFlow Analyzer</h1>
+                    <p class="app-subtitle">Your Elegant Market Sentiment Dashboard</p>
+                </div>
+                <div class="header-right">
+                    <!-- Timezone clocks (IDs match JS for updates) -->
+                    <div class="time-info" id="timezone-clocks">
+                        <div class="time-zone">
+                            <span class="time-label"><i class="fas fa-sun"></i> IST:</span>
+                            <span class="time-value" id="ist-time">Loading...</span>
+                        </div>
+                        <div class="time-zone">
+                            <span class="time-label"><i class="fas fa-globe-europe"></i> LDN:</span>
+                            <span class="time-value" id="ldn-time">Loading...</span>
+                        </div>
+                        <div class="time-zone">
+                            <span class="time-label"><i class="fas fa-city"></i> NY:</span>
+                            <span class="time-value" id="ny-time">Loading...</span>
+                        </div>
+                        <div class="time-zone">
+                            <span class="time-label"><i class="fas fa-yen-sign"></i> TYO:</span>
+                            <span class="time-value" id="tyo-time">Loading...</span>
+                        </div>
+                        <div class="time-zone">
+                            <span class="time-label"><i class="fas fa-globe-asia"></i> SYD:</span>
+                            <span class="time-value" id="syd-time">Loading...</span>
+                        </div>
+                        <div class="time-zone">
+                            <span class="time-label"><i class="fas fa-globe"></i> UTC:</span>
+                            <span class="time-value" id="utc-time">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="live-clock" id="live-clock">Loading...</div>
+                    <a href="about.html" class="btn btn-icon btn-about" title="About This Tool">
+                        <i class="fas fa-question-circle"></i>
+                    </a>
+                    <button class="btn btn-icon btn-clear-all" id="clearAllDataBtn" title="Clear All Data (Counts, History, Journal, Parameters)">
+                        <i class="fas fa-eraser"></i>
+                    </button>
+                </div>
+                <!-- Tool Navigation Bar -->
+                <nav class="tool-navigation">
+                    <button class="nav-button active" data-tool="analyzer">Flow Analyzer</button>
+                    <button class="nav-button" data-tool="pivot">Pivot Calculator</button>
+                </nav>
+            </header>
+
+            <!-- Main Content Area: Dynamically switches between tools -->
+            <main class="main-content-area">
+                <!-- QuantumFlow Analyzer Tool Section -->
+                <section id="flow-analyzer-section" class="tool-section active">
+                    <div class="main-content-grid">
+                        <!-- Trade Actions Section -->
+                        <section class="section-card trade-actions-section">
+                            <h2 class="section-title"><i class="fas fa-chart-line"></i> Trade Flow Input</h2>
+                            <div class="input-grid">
+                                <!-- Buy Flow Input Group -->
+                                <div class="input-group">
+                                    <label for="buy-input" class="input-label"><i class="fas fa-long-arrow-alt-up text-accent-green"></i> Current Buy Flow:</label>
+                                    <div class="input-controls">
+                                        <button class="btn-control btn-deduct" data-action="buy" data-change="-0.5" data-direction="down">-0.5</button>
+                                        <input type="number" id="buy-input" class="value-input" value="0" step="0.5" min="0">
+                                        <button class="btn-control btn-increment" data-action="buy" data-change="0.5" data-direction="up">+0.5</button>
+                                    </div>
+                                </div>
+                                <!-- Sell Flow Input Group -->
+                                <div class="input-group">
+                                    <label for="sell-input" class="input-label"><i class="fas fa-long-arrow-alt-down text-accent-red"></i> Current Sell Flow:</label>
+                                    <div class="input-controls">
+                                        <button class="btn-control btn-deduct" data-action="sell" data-change="-0.5" data-direction="down">-0.5</button>
+                                        <input type="number" id="sell-input" class="value-input" value="0" step="0.5" min="0">
+                                        <button class="btn-control btn-increment" data-action="sell" data-change="0.5" data-direction="up">+0.5</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="button-grid">
+                                <button class="btn btn-primary" id="submitEntriesBtn">
+                                    <i class="fas fa-check-circle"></i> Submit Flow
+                                </button>
+                                <button class="btn btn-secondary" id="resetCurrentBtn">
+                                    <i class="fas fa-sync-alt"></i> Reset Flow
+                                </button>
+                                <button class="btn btn-info" id="undoLastActionBtn">
+                                    <i class="fas fa-undo"></i> Undo
+                                </button>
+                            </div>
+                            <div class="pending-selections">
+                                <div class="selection-item">
+                                    <span id="selected-buy" class="selection-value text-accent-green">0.0</span>
+                                    <span class="selection-label">Pending Buys</span>
+                                </div>
+                                <div class="selection-item">
+                                    <span id="selected-sell" class="selection-value text-accent-red">0.0</span>
+                                    <span class="selection-label">Pending Sells</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Market Sentiment Section -->
+                        <section class="section-card market-sentiment-section">
+                            <h2 class="section-title"><i class="fas fa-chart-pie"></i> Market Sentiment</h2>
+                            <div class="analysis-grid">
+                                <div class="analysis-item">
+                                    <span id="buy-count" class="analysis-value text-accent-green">0.0</span>
+                                    <span class="analysis-label">Total Buys</span>
+                                </div>
+                                <div class="analysis-item">
+                                    <span id="sell-count" class="analysis-value text-accent-red">0.0</span>
+                                    <span class="analysis-label">Total Sells</span>
+                                </div>
+                                <div class="analysis-item">
+                                    <span id="difference" class="analysis-value text-accent-yellow">0.0</span>
+                                    <span class="analysis-label">Difference</span>
+                                </div>
+                                <div class="analysis-item">
+                                    <span id="percentage" class="analysis-value text-accent-blue">0%</span>
+                                    <span class="analysis-label">Influence %</span>
+                                </div>
+                            </div>
+                            <div class="analysis-conclusion" id="analysis-conclusion-area">
+                                <p class="conclusion-text" id="conclusion">Conclusion: No Signal</p>
+                                <span class="sentiment-badge" id="sentiment-badge">No Signal</span>
+                            </div>
+                        </section>
+
+                        <!-- Recent Flows Section -->
+                        <section class="section-card recent-flows-section">
+                            <h2 class="section-title"><i class="fas fa-history"></i> Recent Flows <span class="text-xs text-text-dark">(Last 30)</span></h2>
+                            <div id="history" class="history-list scrollable-content">
+                                <p class="text-center text-text-dark py-4">No entries yet.</p>
+                            </div>
+                        </section>
+
+                        <!-- Collapsible Panel for Notes/Parameters/Journal -->
+                        <section class="section-card collapsible-panel-container">
+                            <div class="collapsible-header" id="toggleNotesParamsBtn">
+                                <h2 class="section-title flex-grow"><i class="fas fa-clipboard-list"></i> Notes & Parameters & Journal</h2>
+                                <i class="fas fa-chevron-down toggle-icon"></i>
+                            </div>
+                            <div class="collapsible-content collapsed" id="notes-params-content">
+                                <!-- Detailed Entry History Notes Sub-section -->
+                                <h3 class="subsection-title"><i class="fas fa-marker"></i> Detailed Entry History Notes</h3>
+                                <input type="text" id="note-search" class="text-input search-input" placeholder="Search notes by title or content...">
+                                <div id="historyWithNotes" class="history-detail-list scrollable-content">
+                                    <p class="text-center text-text-dark py-4">No detailed entries yet.</p>
+                                </div>
+
+                                <!-- Custom Trading Parameters Sub-section -->
+                                <h3 class="subsection-title mt-8"><i class="fas fa-sliders-h"></i> Custom Trading Parameters</h3>
+                                <div id="parameter-grid" class="parameter-grid">
+                                    <!-- Parameters dynamically loaded here -->
+                                </div>
+                                <div class="parameter-add">
+                                    <input type="text" id="new-param-label" class="text-input" placeholder="New Parameter Label (e.g., 'Risk Factor')">
+                                    <input type="number" id="new-param-value" class="text-input" value="1.0" step="0.1">
+                                    <button class="btn btn-secondary" id="addParameterBtn"><i class="fas fa-plus-circle"></i> Add Parameter</button>
+                                </div>
+
+                                <!-- Trading Journal Form Sub-section -->
+                                <h3 class="subsection-title mt-8"><i class="fas fa-pen-nib"></i> Log New Trade</h3>
+                                <div class="journal-form">
+                                    <div class="form-group">
+                                        <label for="trade-instrument">Instrument:</label>
+                                        <input type="text" id="trade-instrument" class="text-input" placeholder="e.g., EUR/USD, SPY, TSLA">
+                                    </div>
+                                    <div class="form-group grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="trade-entry-price">Entry Price:</label>
+                                            <input type="number" id="trade-entry-price" class="text-input" step="0.01">
+                                        </div>
+                                        <div>
+                                            <label for="trade-exit-price">Exit Price:</label>
+                                            <input type="number" id="trade-exit-price" class="text-input" step="0.01">
+                                        </div>
+                                    </div>
+                                    <div class="form-group grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="trade-pnl">P/L ($):</label>
+                                            <input type="number" id="trade-pnl" class="text-input" step="0.01" placeholder="Profit or Loss">
+                                        </div>
+                                        <div>
+                                            <label for="trade-date">Date:</label>
+                                            <input type="date" id="trade-date" class="text-input">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="trade-notes">Notes:</label>
+                                        <textarea id="trade-notes" class="text-input" rows="4" placeholder="Key observations, reasons for trade, outcome..."></textarea>
+                                    </div>
+                                    <div class="flex justify-end gap-3 mt-4">
+                                        <button class="btn btn-primary" id="saveTradeBtn"><i class="fas fa-save"></i> Save Trade</button>
+                                        <button class="btn btn-secondary" id="clearJournalFormBtn"><i class="fas fa-undo"></i> Reset Form</button>
+                                    </div>
+                                </div>
+
+                                <!-- Logged Trades History Sub-section -->
+                                <h3 class="subsection-title mt-8"><i class="fas fa-scroll"></i> Logged Trades History</h3>
+                                <div class="journal-controls">
+                                    <button class="btn btn-secondary" id="clearJournalBtn"><i class="fas fa-trash-alt"></i> Clear All Journal Entries</button>
+                                </div>
+                                <div id="journal-entries" class="journal-list scrollable-content">
+                                    <p class="text-center text-text-dark py-4">No trades logged yet.</p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </section>
+
+                <!-- NIFTY Pivot Calculator Tool Section -->
+                <section id="pivot-calculator-section" class="tool-section hidden">
+                    <div class="pivot-calculator-grid">
+                        <!-- Formula Selection -->
+                        <div class="section-card">
+                            <h2 class="section-title"><i class="fas fa-square-root-alt"></i> SELECT FORMULAS</h2>
+                            <div class="formula-grid" id="formula-grid">
+                                <!-- Formula cards will be populated by JavaScript -->
+                            </div>
+                            <div class="mt-4 flex justify-center gap-4">
+                                <button class="btn btn-primary" id="selectAllFormulasBtn">SELECT ALL</button>
+                                <button class="btn btn-secondary" id="clearAllFormulasBtn">CLEAR ALL</button>
+                            </div>
+                        </div>
+
+                        <!-- Input Values -->
+                        <div class="section-card">
+                            <h2 class="section-title"><i class="fas fa-keyboard"></i> INPUT VALUES</h2>
+                            <div class="input-grid">
+                                <div class="input-group">
+                                    <label class="input-label">YESTERDAY'S HIGH</label>
+                                    <input type="number" id="yesterday-high" class="text-input" placeholder="ENTER HIGH PRICE" step="0.01">
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">YESTERDAY'S LOW</label>
+                                    <input type="number" id="yesterday-low" class="text-input" placeholder="ENTER LOW PRICE" step="0.01">
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">YESTERDAY'S CLOSE</label>
+                                    <input type="number" id="yesterday-close" class="text-input" placeholder="ENTER CLOSE PRICE" step="0.01">
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">TODAY'S OPEN (OPTIONAL)</label>
+                                    <input type="number" id="today-open" class="text-input" placeholder="ENTER OPEN PRICE" step="0.01">
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">YESTERDAY'S OPEN (OPTIONAL)</label>
+                                    <input type="number" id="yesterday-open" class="text-input" placeholder="ENTER OPEN PRICE" step="0.01">
+                                </div>
+                            </div>
+                            <div class="mt-6 text-center">
+                                <button class="btn btn-primary" id="calculateLevelsBtn">
+                                    <i class="fas fa-calculator" style="margin-right: 8px;"></i>CALCULATE LEVELS
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Recurring Levels Control -->
+                        <div class="section-card pivot-recurring-controls">
+                            <h2 class="section-title"><i class="fas fa-sync-alt"></i> RECURRING LEVELS DETECTION</h2>
+                            <p class="text-sm text-text-dark mb-4">
+                                SET THE MINIMUM NUMBER OF FORMULAS THAT MUST CONVERGE FOR A LEVEL TO BE CONSIDERED RECURRING
+                            </p>
+                            <div class="slider-container">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm text-text-dark">MINIMUM CONVERGENCE</span>
+                                    <span class="text-lg font-bold text-accent-info" id="convergence-value">3</span>
+                                </div>
+                                <input type="range" id="convergence-slider" class="slider" min="2" max="10" value="3">
+                            </div>
+                            <div class="flex justify-between text-xs text-text-dark">
+                                <span>LESS STRICT</span>
+                                <span>MORE STRICT</span>
+                            </div>
+
+                            <div class="mt-6">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm text-text-dark">TOLERANCE (POINTS)</span>
+                                    <span class="text-lg font-bold text-accent-info" id="tolerance-value">0.50</span>
+                                </div>
+                                <div class="flex gap-2 items-center">
+                                    <input type="number" id="tolerance-input" class="text-input" style="width: 100px;" value="0.50" min="0.1" max="10" step="0.1">
+                                    <input type="range" id="tolerance-slider" class="slider" min="0.1" max="5" step="0.1" value="0.5">
+                                </div>
+                                <div class="flex justify-between text-xs text-text-dark mt-1">
+                                    <span>TIGHT (0.1)</span>
+                                    <span>LOOSE (5.0)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Results Display -->
+                        <div class="section-card" id="pivot-results-section" style="display: none;">
+                            <h2 class="section-title"><i class="fas fa-chart-bar"></i> INDIVIDUAL FORMULA RESULTS</h2>
+                            <div id="individual-results" class="scrollable-content">
+                                <!-- Individual formula results will be populated here -->
+                            </div>
+                        </div>
+
+                        <!-- Recurring Levels Display -->
+                        <div class="section-card" id="pivot-recurring-section" style="display: none;">
+                            <h2 class="section-title"><i class="fas fa-star"></i> RECURRING LEVELS</h2>
+                            <p class="text-sm text-text-dark mb-4">
+                                LEVELS WHERE <span id="min-convergence-display">3</span> OR MORE FORMULAS CONVERGE (WITHIN ±<span id="tolerance-display-recurring">0.50</span> POINTS)
+                            </p>
+                            <div id="recurring-results" class="pivot-level-grid scrollable-content">
+                                <!-- Recurring levels will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- News/Market Insights Panel (Right Column, shared across tools) -->
+        <aside class="news-panel">
+            <h3 class="news-panel-title"><i class="fas fa-bullhorn"></i> Market Insights</h3>
+            <div class="news-content scrollable-content" id="news-feed">
+                <div class="news-item">
+                    <span class="news-source">TradingView:</span>
+                    <p class="news-headline">Global markets anticipate Fed's rate decision, impact on emerging economies.</p>
+                </div>
+                <div class="news-item">
+                    <span class="news-source">Economic Times:</span>
+                    <p class="news-headline">Indian Rupee strengthens against USD ahead of RBI's policy review.</p>
+                </div>
+                <div class="news-item">
+                    <span class="news-source">NDTV Profit:</span>
+                    <p class="news-headline">Tech stocks surge on Q4 earnings optimism, Nifty IT leads gains.</p>
+                </div>
+                <div class="news-item">
+                    <span class="news-source">Reuters:</span>
+                    <p class="news-headline">Oil prices steady as supply concerns balance demand outlook from China.</p>
+                </div>
+                <div class="news-item">
+                    <span class="news-source">Business Standard:</span>
+                    <p class="news-headline">SEBI proposes new norms for FPIs to curb volatility in mid-cap segments.</p>
+                </div>
+                <div class="news-item">
+                    <span class="news-source">CNBC TV18:</span>
+                    <p class="news-headline">Gold futures jump as geopolitical tensions escalate, safe-haven demand rises.</p>
+                </div>
+                <div class="news-item disclaimer">
+                    **Disclaimer:** This is a static, simulated news feed for design demonstration. Live market news requires integration with a backend API due to browser security (CORS) and API key requirements.
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Main JavaScript File -->
+    <script src="js/script.js"></script>
+</body>
+</html>

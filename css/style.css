@@ -1,16 +1,16 @@
 /* Color Palette & Theme Variables (ELEGANT ANTIQUE STOCK MARKET) */
 :root {
     /* Backgrounds */
-    --color-bg-darkest: #1A222F; /* Deepest blue-grey for body bg */
-    --color-bg-primary: #1F2C3E; /* Main container background */
-    --color-bg-secondary: #2B3A4F; /* Cards background */
-    --color-bg-tertiary: #3A4E63; /* Input fields, item backgrounds */
-    --color-bg-active: #4F6D93;   /* Active/hover states for subtle highlights */
+    --color-bg-darkest: #161D2B; /* Deepest blue-grey for body bg */
+    --color-bg-primary: #1C2636; /* Main container background */
+    --color-bg-secondary: #27374D; /* Cards background */
+    --color-bg-tertiary: #374C65; /* Input fields, item backgrounds */
+    --color-bg-light: #4F6D93;    /* Active states or subtle highlights */
 
     /* Borders & Dividers */
-    --color-border-main: #5C7B9E; /* Main app container subtle border */
-    --color-border-card: #4A6581; /* Card borders */
-    --color-border-subtle: rgba(255, 255, 255, 0.07); /* Fainter lines, dividers */
+    --color-border-main: #4A637C; /* Main app container subtle border */
+    --color-border-card: #5B7EA5; /* Card borders */
+    --color-border-subtle: rgba(255, 255, 255, 0.08); /* Fainter lines, dividers */
     --color-border-accent-gold: #D4AF37; /* Muted Gold/Brass for titles/accents */
     --color-border-accent-bronze: #CD7F32; /* Bronze for elements */
 
@@ -29,14 +29,15 @@
     --color-accent-orange: #E67E22; /* Carrot Orange (Journal logs) */
 
     /* Shadows & Glows */
-    --shadow-deep: 0 15px 40px rgba(0, 0, 0, 0.6);
+    --shadow-deep: 0 15px 40px rgba(0, 0, 0, 0.65);
     --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.5);
     --shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.4);
-    --shadow-inner: inset 0 2px 5px rgba(0, 0, 0, 0.3);
-    --glow-gold: 0 0 12px rgba(212, 175, 55, 0.4);
+    --shadow-inner: inset 0 2px 5px rgba(0, 0, 0, 0.35);
+    --glow-gold: 0 0 15px rgba(212, 175, 55, 0.5);
+    --glow-blue: 0 0 15px rgba(52, 152, 219, 0.5);
 
     /* Transitions */
-    --transition-speed: 0.25s ease-out;
+    --transition-speed: 0.3s ease-out; /* Slightly longer for smoother animations */
 
     /* Fonts */
     --font-family-title: 'Cormorant Garamond', serif;
@@ -44,17 +45,28 @@
     --font-family-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
 
     /* Border Radii */
-    --radius-xl: 24px; /* Main container */
-    --radius-lg: 16px; /* Section cards */
-    --radius-md: 10px; /* Buttons, inputs */
-    --radius-sm: 6px;  /* Small elements */
+    --radius-xl: 28px; /* Main container */
+    --radius-lg: 20px; /* Section cards */
+    --radius-md: 12px; /* Buttons, inputs */
+    --radius-sm: 8px;  /* Small elements */
 }
 
-/* --- Helper Function (simulated darken/lighten for CSS variables) --- */
-/* For actual projects, use a CSS preprocessor like Sass or manipulate HSL colors with JS for true dynamic shades */
-/* This is a visual guide. You'd replace `darken(var(--color), X%)` with a manually chosen darker shade of that color. */
-/* Example: darken(#2ECC71, 15%) is approximately #24A25C */
-/* Example: lighten(#2ECC71, 20%) is approximately #5BD996 */
+/* --- Keyframe Animations --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Enhanced animation for the analysis conclusion area */
+@keyframes resultHighlight {
+    0% { background-color: transparent; box-shadow: none; }
+    20% { background-color: rgba(var(--color-border-accent-gold), 0.08); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+    80% { background-color: rgba(var(--color-border-accent-gold), 0.08); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+    100% { background-color: transparent; box-shadow: none; }
+}
+.analysis-conclusion.highlight {
+    animation: resultHighlight 1.5s ease-out; /* Apply this animation */
+}
 
 /* --- Global Styles --- */
 * {
@@ -81,7 +93,7 @@ body {
 /* --- App Wrapper (for main content + news panel layout) --- */
 .app-wrapper {
     display: grid;
-    grid-template-columns: 1fr 280px; /* Main content area + fixed news panel */
+    grid-template-columns: 1fr 320px; /* Main content area + wider fixed news panel */
     gap: 30px; /* Space between main content and news */
     width: 100%;
     max-width: 1600px; /* Increased max-width to accommodate news panel */
@@ -95,10 +107,10 @@ body {
     border: 1px solid var(--color-border-main);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-deep);
-    padding: 30px;
+    padding: 35px; /* Increased padding */
     display: flex;
     flex-direction: column;
-    gap: 25px; /* Spacing between header, main-content-grid */
+    gap: 30px; /* Spacing between header, main-content-grid */
     position: relative;
     overflow: hidden;
 }
@@ -109,7 +121,7 @@ body {
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 20px;
+    padding-bottom: 25px; /* Increased padding */
     margin-bottom: 15px;
     border-bottom: 1px solid var(--color-border-subtle);
 }
@@ -120,19 +132,19 @@ body {
 
 .app-title {
     font-family: var(--font-family-title);
-    font-size: 3.5rem;
+    font-size: 3.8rem; /* Slightly larger */
     font-weight: 700;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.04em; /* More pronounced letter spacing */
     color: var(--color-border-accent-gold);
     line-height: 1;
     text-shadow: var(--glow-gold);
 }
 
 .app-subtitle {
-    font-size: 0.95rem;
+    font-size: 1rem; /* Slightly larger */
     color: var(--color-text-dark);
-    letter-spacing: 1px;
-    margin-top: 8px;
+    letter-spacing: 1.2px; /* More pronounced */
+    margin-top: 10px; /* More space */
     text-transform: uppercase;
     font-weight: 500;
 }
@@ -140,7 +152,7 @@ body {
 .header-right {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 25px; /* More space */
     flex-wrap: wrap;
     justify-content: flex-end;
     margin-top: 15px; /* For wrap on smaller screens */
@@ -148,12 +160,12 @@ body {
 
 .time-info {
     display: flex;
-    gap: 15px;
+    gap: 18px; /* More space */
     font-family: var(--font-family-mono);
-    font-size: 0.85rem;
+    font-size: 0.9rem; /* Slightly larger */
     color: var(--color-text-medium);
     background: var(--color-bg-tertiary);
-    padding: 10px 18px;
+    padding: 12px 20px; /* Larger padding */
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border-subtle);
     box-shadow: var(--shadow-inner);
@@ -162,7 +174,7 @@ body {
 .time-zone {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px; /* More space */
 }
 
 .time-label {
@@ -175,38 +187,59 @@ body {
 
 .live-clock {
     font-family: var(--font-family-mono);
-    font-size: 0.9rem;
+    font-size: 1rem; /* Slightly larger */
     color: var(--color-text-light);
     background: var(--color-bg-tertiary);
-    padding: 10px 18px;
+    padding: 12px 20px; /* Larger padding */
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border-subtle);
     box-shadow: var(--shadow-inner);
     font-weight: 600;
 }
 
-.btn-clear-all {
-    width: 48px;
-    height: 48px;
+.btn-about {
+    width: 52px;
+    height: 52px;
     padding: 0;
     border-radius: 50%;
-    font-size: 1.3rem;
+    font-size: 1.4rem;
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border-subtle);
+    color: var(--color-text-medium); /* Muted color for info */
+    box-shadow: var(--shadow-subtle);
+    transition: all var(--transition-speed);
+}
+.btn-about:hover {
+    color: var(--color-accent-blue);
+    border-color: var(--color-accent-blue);
+    box-shadow: 0 0 18px rgba(52, 152, 219, 0.4);
+    transform: translateY(-2px);
+}
+
+.btn-clear-all {
+    width: 52px; /* Larger */
+    height: 52px; /* Larger */
+    padding: 0;
+    border-radius: 50%;
+    font-size: 1.4rem; /* Larger icon */
     background: var(--color-bg-tertiary);
     border: 1px solid var(--color-border-subtle);
     color: var(--color-text-dark);
     box-shadow: var(--shadow-subtle);
+    transition: all var(--transition-speed);
 }
 .btn-clear-all:hover {
     color: var(--color-accent-red);
     border-color: var(--color-accent-red);
-    box-shadow: 0 0 15px rgba(231, 76, 60, 0.3); /* Manual RGB for red accent */
+    box-shadow: 0 0 18px rgba(231, 76, 60, 0.4); /* Stronger red glow */
+    transform: translateY(-2px);
 }
 
 /* --- Main Content Grid (Central Area) --- */
 .main-content-grid {
     display: grid;
     grid-template-columns: 1fr 1fr; /* Two columns */
-    gap: 25px; /* Gap between sections */
+    gap: 30px; /* More space between sections */
 }
 
 /* --- Section Cards (General Styling) --- */
@@ -214,39 +247,43 @@ body {
     background: var(--color-bg-secondary);
     border: 1px solid var(--color-border-card);
     border-radius: var(--radius-lg);
-    padding: 25px;
+    padding: 30px; /* Increased padding */
     box-shadow: var(--shadow-medium);
     transition: transform var(--transition-speed), box-shadow var(--transition-speed), border-color var(--transition-speed);
+    animation: fadeIn 0.8s forwards; /* Initial fade-in animation */
+    position: relative; /* For inner animations */
+    overflow: hidden; /* For inner animations like pulse */
 }
 .section-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    transform: translateY(-5px); /* More pronounced lift */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); /* Deeper shadow */
     border-color: var(--color-border-accent-gold);
 }
 
 .section-title {
     font-family: var(--font-family-title);
-    font-size: 1.8rem;
+    font-size: 2rem; /* Larger */
     font-weight: 700;
-    margin-bottom: 25px;
+    margin-bottom: 30px; /* More space */
     color: var(--color-border-accent-gold);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 15px; /* More space */
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.7px; /* More pronounced */
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.2); /* Subtle glow */
 }
 
 .subsection-title {
     font-family: var(--font-family-body);
-    font-size: 1.25rem;
+    font-size: 1.35rem; /* Larger */
     font-weight: 600;
     color: var(--color-text-light);
-    margin-top: 25px;
-    margin-bottom: 15px;
+    margin-top: 30px; /* More space */
+    margin-bottom: 18px; /* More space */
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px; /* More space */
 }
 .subsection-title:first-of-type {
     margin-top: 0; /* No top margin if it's the first one in the section */
@@ -256,30 +293,30 @@ body {
 .input-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 25px;
-    margin-bottom: 30px;
+    gap: 30px; /* More space */
+    margin-bottom: 35px; /* More space */
 }
 
 .input-group {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px; /* More space */
 }
 
 .input-label {
-    font-size: 0.9rem;
+    font-size: 1rem; /* Slightly larger */
     color: var(--color-text-medium);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.7px; /* More pronounced */
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px; /* More space */
 }
 
 .input-controls {
     display: flex;
-    gap: 10px;
+    gap: 12px; /* More space */
     align-items: center;
 }
 
@@ -288,9 +325,9 @@ body {
     background: var(--color-bg-tertiary);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-md);
-    padding: 10px 15px;
+    padding: 12px 18px; /* Larger padding */
     color: var(--color-text-light);
-    font-size: 1.25rem;
+    font-size: 1.4rem; /* Larger font */
     font-weight: 700;
     text-align: center;
     font-family: var(--font-family-mono);
@@ -300,7 +337,7 @@ body {
 .value-input:focus {
     outline: none;
     border-color: var(--color-accent-blue);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3); /* Manual RGB for blue accent */
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.4); /* Stronger glow */
 }
 /* Hide number input arrows */
 .value-input::-webkit-outer-spin-button,
@@ -313,10 +350,10 @@ body {
 }
 
 .btn-control { /* For +/- buttons */
-    width: 65px;
-    height: 50px;
+    width: 70px; /* Larger */
+    height: 55px; /* Larger */
     padding: 0;
-    font-size: 1.6rem;
+    font-size: 1.8rem; /* Larger icon */
     font-weight: 700;
     border-radius: var(--radius-md);
     background: var(--color-bg-tertiary);
@@ -327,8 +364,8 @@ body {
     cursor: pointer;
 }
 .btn-control:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    transform: translateY(-3px); /* More pronounced lift */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Deeper shadow */
 }
 .btn-control:active {
     transform: translateY(0);
@@ -340,24 +377,24 @@ body {
 
 /* --- Generic Buttons --- */
 .btn {
-    padding: 12px 22px;
+    padding: 14px 25px; /* Larger padding */
     border-radius: var(--radius-md);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 1rem; /* Slightly larger */
     cursor: pointer;
     border: none;
     transition: all var(--transition-speed);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    letter-spacing: 0.7px;
+    gap: 12px; /* More space */
+    letter-spacing: 0.8px; /* More pronounced */
     text-transform: uppercase;
     box-shadow: var(--shadow-subtle);
 }
 .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    transform: translateY(-3px); /* More pronounced lift */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Deeper shadow */
 }
 .btn:active {
     transform: translateY(0);
@@ -384,9 +421,9 @@ body {
 
 .button-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 18px;
-    margin-bottom: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); /* Slightly wider min-width */
+    gap: 20px; /* More space */
+    margin-bottom: 35px; /* More space */
 }
 
 /* --- Pending Selections --- */
@@ -396,7 +433,7 @@ body {
     align-items: center;
     background: var(--color-bg-tertiary);
     border-radius: var(--radius-md);
-    padding: 20px;
+    padding: 25px; /* Larger padding */
     border: 1px solid var(--color-border-subtle);
     box-shadow: var(--shadow-inner);
 }
@@ -407,85 +444,87 @@ body {
 }
 
 .selection-value {
-    font-size: 2.8rem;
+    font-size: 3rem; /* Larger */
     font-family: var(--font-family-title);
     font-weight: 700;
     display: block;
     line-height: 1;
-    margin-bottom: 5px;
-    text-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+    margin-bottom: 8px; /* More space */
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
 .selection-label {
-    font-size: 0.85rem;
+    font-size: 0.9rem; /* Slightly larger */
     color: var(--color-text-dark);
     text-transform: uppercase;
-    letter-spacing: 0.8px;
+    letter-spacing: 1px; /* More pronounced */
     font-weight: 600;
 }
 
 /* --- Analysis Section --- */
 .analysis-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 18px;
-    margin-bottom: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* Slightly wider min-width */
+    gap: 20px; /* More space */
+    margin-bottom: 30px; /* More space */
 }
 
 .analysis-item {
     background: var(--color-bg-tertiary);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-md);
-    padding: 20px 15px;
+    padding: 22px 18px; /* Larger padding */
     text-align: center;
     box-shadow: var(--shadow-inner);
 }
 
 .analysis-value {
-    font-size: 2.5rem;
+    font-size: 2.8rem; /* Larger */
     font-family: var(--font-family-title);
     font-weight: 700;
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 8px; /* More space */
     line-height: 1;
-    text-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
 .analysis-label {
-    font-size: 0.8rem;
+    font-size: 0.85rem; /* Slightly larger */
     color: var(--color-text-dark);
     text-transform: uppercase;
-    letter-spacing: 0.8px;
+    letter-spacing: 1px; /* More pronounced */
     font-weight: 600;
 }
 
 .analysis-conclusion {
     text-align: center;
-    padding-top: 25px;
+    padding-top: 30px; /* More space */
     border-top: 1px solid var(--color-border-subtle);
 }
 
 .conclusion-text {
     font-family: var(--font-family-title);
-    font-size: 2rem;
+    font-size: 2.2rem; /* Larger */
     font-weight: 700;
-    margin-bottom: 18px;
+    margin-bottom: 20px; /* More space */
     color: var(--color-text-light);
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
 }
+/* No pulsing class for conclusion-text directly, the highlight goes on the parent */
+
 
 .sentiment-badge {
     display: inline-block;
-    padding: 12px 25px;
-    border-radius: 30px;
-    font-size: 0.95rem;
+    padding: 14px 30px; /* Larger padding */
+    border-radius: 35px; /* More rounded */
+    font-size: 1rem; /* Slightly larger */
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1.2px;
+    letter-spacing: 1.5px; /* More pronounced */
     border: 1px solid var(--color-border-card);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); /* Deeper shadow */
     transition: all var(--transition-speed);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 /* Sentiment Badge Colors */
@@ -501,23 +540,25 @@ body {
 
 /* --- History & Journal List (Scrollable Content) --- */
 .history-list, .history-detail-list, .journal-list, .news-content {
-    max-height: 250px; /* Adjusted max height for scrollable content within sections */
+    max-height: 300px; /* Adjusted max height for scrollable content within sections */
     overflow-y: auto;
-    padding-right: 15px; /* Space for scrollbar */
+    padding-right: 18px; /* Space for scrollbar */
 }
 
+/* Custom Scrollbar Styles */
 .scrollable-content::-webkit-scrollbar {
-    width: 8px; /* Width of the scrollbar */
-    height: 8px; /* Height for horizontal scrollbars if any */
+    width: 10px; /* Width of the scrollbar */
+    height: 10px; /* Height for horizontal scrollbars if any */
 }
 .scrollable-content::-webkit-scrollbar-track {
     background: var(--color-bg-secondary); /* Color of the track */
-    border-radius: 4px;
+    border-radius: 5px;
 }
 .scrollable-content::-webkit-scrollbar-thumb {
     background-color: var(--color-border-accent-bronze); /* Color of the scroll thumb */
-    border-radius: 4px; /* Roundness of the scroll thumb */
+    border-radius: 5px; /* Roundness of the scroll thumb */
     border: 2px solid var(--color-bg-secondary); /* Creates a margin around the thumb */
+    transition: background-color var(--transition-speed);
 }
 .scrollable-content::-webkit-scrollbar-thumb:hover {
     background-color: var(--color-border-accent-gold); /* Color when hovered */
@@ -528,8 +569,8 @@ body {
     background: var(--color-bg-tertiary);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-md);
-    padding: 15px;
-    margin-bottom: 12px;
+    padding: 18px; /* Larger padding */
+    margin-bottom: 15px; /* More space */
     transition: all var(--transition-speed);
     box-shadow: var(--shadow-subtle);
     position: relative;
@@ -538,8 +579,8 @@ body {
 
 .history-item:hover, .journal-item:hover {
     border-color: var(--color-border-accent-gold);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    transform: translateY(-3px); /* More pronounced lift */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Deeper shadow */
 }
 
 /* Subtle line effect on hover */
@@ -548,7 +589,7 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    width: 4px;
+    width: 6px; /* Wider line */
     height: 100%;
     background: linear-gradient(to bottom, var(--color-accent-blue), var(--color-accent-green));
     transform: translateX(-100%);
@@ -559,24 +600,24 @@ body {
 }
 
 .history-timestamp {
-    font-size: 0.8rem;
+    font-size: 0.85rem; /* Slightly larger */
     color: var(--color-text-dark);
-    margin-bottom: 5px;
+    margin-bottom: 8px; /* More space */
     display: block;
     font-family: var(--font-family-mono);
 }
 
 .history-title-input-group { /* For notes section input group for title */
-    margin-bottom: 10px;
+    margin-bottom: 12px; /* More space */
 }
 .history-title-input {
     width: 100%;
     background: var(--color-bg-darkest);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-sm);
-    padding: 8px 12px;
+    padding: 10px 15px; /* Larger padding */
     color: var(--color-text-light);
-    font-size: 0.9rem;
+    font-size: 0.95rem; /* Slightly larger */
     font-weight: 600;
     margin-top: 5px;
     transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
@@ -587,24 +628,24 @@ body {
 .history-title-input:focus {
     outline: none;
     border-color: var(--color-accent-blue);
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3); /* Stronger glow */
 }
 
 .history-data {
-    font-size: 0.9rem;
+    font-size: 0.95rem; /* Slightly larger */
     color: var(--color-text-medium);
-    line-height: 1.4;
-    margin-bottom: 10px;
+    line-height: 1.5;
+    margin-bottom: 12px; /* More space */
 }
 
 /* --- Journal Specific Styles --- */
 .journal-form .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 18px; /* More space */
 }
 .journal-form .form-group label {
     display: block;
-    margin-bottom: 8px;
-    font-size: 0.9rem;
+    margin-bottom: 10px; /* More space */
+    font-size: 0.95rem; /* Slightly larger */
     color: var(--color-text-medium);
     font-weight: 600;
 }
@@ -612,8 +653,8 @@ body {
 .journal-controls {
     display: flex;
     justify-content: flex-end; /* Align clear button to right */
-    gap: 15px;
-    margin-bottom: 20px;
+    gap: 18px; /* More space */
+    margin-bottom: 25px; /* More space */
     flex-wrap: wrap;
 }
 
@@ -624,30 +665,30 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 10px; /* More space */
 }
 .journal-entry-instrument {
     font-family: var(--font-family-title);
-    font-size: 1.15rem;
+    font-size: 1.25rem; /* Larger */
     font-weight: 700;
     color: var(--color-border-accent-gold);
 }
 .journal-entry-date {
     font-family: var(--font-family-mono);
-    font-size: 0.85rem;
+    font-size: 0.9rem; /* Slightly larger */
     color: var(--color-text-dark);
 }
 .journal-entry-price-pnl {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
-    font-size: 0.95rem;
+    gap: 12px; /* More space */
+    font-size: 1rem; /* Slightly larger */
     color: var(--color-text-medium);
-    margin-bottom: 10px;
+    margin-bottom: 15px; /* More space */
 }
 .journal-entry-price-pnl span {
     background: var(--color-bg-darkest);
-    padding: 6px 10px;
+    padding: 8px 12px; /* Larger padding */
     border-radius: var(--radius-sm);
     border: 1px solid var(--color-border-subtle);
     text-align: center;
@@ -657,14 +698,14 @@ body {
 
 .journal-entry-notes {
     font-style: italic;
-    font-size: 0.85rem;
+    font-size: 0.9rem; /* Slightly larger */
     color: var(--color-text-dark);
     background: var(--color-bg-darkest);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-sm);
-    padding: 10px 15px;
-    margin-top: 10px;
-    line-height: 1.5;
+    padding: 12px 18px; /* Larger padding */
+    margin-top: 12px; /* More space */
+    line-height: 1.6;
     white-space: pre-wrap; /* Preserve line breaks */
 }
 .journal-entry-notes:empty::before {
@@ -676,14 +717,14 @@ body {
 /* --- Parameter Management --- */
 .parameter-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); /* Slightly wider min-width */
+    gap: 18px; /* More space */
     margin-bottom: 25px;
 }
 
 .parameter-item {
     background: var(--color-bg-tertiary);
-    padding: 18px;
+    padding: 20px; /* Larger padding */
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border-subtle);
     text-align: center;
@@ -691,19 +732,19 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 100px;
+    min-height: 110px; /* Slightly taller */
     box-shadow: var(--shadow-inner);
     position: relative;
 }
 
 .parameter-item .delete-param-btn {
     position: absolute;
-    top: 6px;
-    right: 6px;
+    top: 8px;
+    right: 8px;
     background: transparent;
     border: none;
     color: var(--color-text-dark);
-    font-size: 1rem;
+    font-size: 1.1rem; /* Slightly larger */
     cursor: pointer;
     transition: color var(--transition-speed), transform var(--transition-speed);
 }
@@ -713,41 +754,41 @@ body {
 }
 
 .parameter-value {
-    font-size: 2.2rem;
+    font-size: 2.5rem; /* Larger */
     font-family: var(--font-family-title);
     font-weight: 700;
     color: var(--color-accent-yellow);
-    margin-bottom: 5px;
+    margin-bottom: 8px; /* More space */
     line-height: 1;
 }
 
 .parameter-label {
-    font-size: 0.85rem;
+    font-size: 0.9rem; /* Slightly larger */
     color: var(--color-text-medium);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.7px; /* More pronounced */
     display: flex;
     flex-direction: column; /* Stack label and subtext */
     align-items: center;
-    gap: 3px;
+    gap: 5px; /* More space */
     font-weight: 600;
 }
 
 .sub-text {
-    font-size: 0.7rem;
+    font-size: 0.75rem; /* Slightly larger */
     color: var(--color-text-placeholder);
     display: block;
     text-transform: none;
     font-weight: 400;
-    line-height: 1.3;
+    line-height: 1.4;
 }
 
 .parameter-add {
     display: grid;
     grid-template-columns: 2fr 1fr auto;
-    gap: 15px;
-    margin-top: 20px;
-    padding-top: 20px;
+    gap: 18px; /* More space */
+    margin-top: 25px; /* More space */
+    padding-top: 25px; /* More space */
     border-top: 1px solid var(--color-border-subtle);
 }
 
@@ -756,9 +797,9 @@ body {
     background: var(--color-bg-tertiary);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-sm);
-    padding: 10px 15px;
+    padding: 12px 18px; /* Larger padding */
     color: var(--color-text-light);
-    font-size: 1rem;
+    font-size: 1rem; /* Slightly larger */
     font-family: var(--font-family-body);
     transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
@@ -768,25 +809,26 @@ body {
 .text-input:focus {
     outline: none;
     border-color: var(--color-accent-blue);
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3); /* Stronger glow */
 }
 textarea.text-input {
     resize: vertical;
-    min-height: 80px;
+    min-height: 90px; /* Slightly taller */
 }
 
 .search-input {
-    padding-left: 40px; /* Space for icon */
+    padding-left: 45px; /* Space for icon */
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="%236A8095"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L461.7 461.7c4.7 4.7 4.7 12.3 0 17s-12.3 4.7-17 0L359.3 376c-34.4 25.1-76.8 40-122.7 40C100.3 416 0 315.7 0 181.7S100.3 0 233.7 0 416 100.3 416 208zM233.7 352c-70.7 0-128-57.3-128-128s57.3-128 128-128 128 57.3 128 128-57.3 128-128 128z"/></svg>');
     background-repeat: no-repeat;
-    background-position: 12px center;
-    background-size: 20px 20px;
+    background-position: 15px center; /* Centered icon */
+    background-size: 22px 22px; /* Larger icon */
 }
 
 /* --- Collapsible Panel --- */
 .collapsible-panel-container {
     grid-column: span 2; /* Spans both columns in the main grid */
-    overflow: hidden; /* Hide overflow when content collapses */
+    /* Handled by JS for animation */
+    /* max-height: 0; opacity: 0; overflow: hidden; */
 }
 
 .collapsible-header {
@@ -795,14 +837,14 @@ textarea.text-input {
     align-items: center;
     cursor: pointer;
     background: var(--color-bg-secondary);
-    padding: 15px 25px;
-    margin: -25px; /* Adjust to cover section-card padding */
-    margin-bottom: 25px; /* Add margin after header */
+    padding: 20px 30px; /* Larger padding */
+    margin: -30px; /* Adjust to cover section-card padding */
+    margin-bottom: 30px; /* Add margin after header */
     border-bottom: 1px solid var(--color-border-subtle);
     transition: background-color var(--transition-speed);
 }
 .collapsible-header:hover {
-    background-color: var(--color-bg-tertiary);
+    background-color: var(--color-bg-light); /* More pronounced hover */
 }
 
 .collapsible-header .section-title { /* Reuse section-title style */
@@ -810,7 +852,7 @@ textarea.text-input {
 }
 
 .toggle-icon {
-    font-size: 1.5rem;
+    font-size: 1.8rem; /* Larger */
     color: var(--color-border-accent-gold);
     transition: transform var(--transition-speed);
 }
@@ -825,10 +867,10 @@ textarea.text-input {
     max-height: 0;
     opacity: 0;
     overflow: hidden;
-    transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
+    transition: max-height 0.6s ease-out, opacity 0.6s ease-out; /* Slower transition for smoother collapse */
 }
 .collapsible-content.active {
-    max-height: 1000px; /* Large enough to accommodate content, adjust if content is much larger */
+    max-height: 2000px; /* Very large to ensure all content fits, adjust if content is much larger */
     opacity: 1;
     overflow: visible; /* Let scrollable parts handle their own overflow */
 }
@@ -846,50 +888,54 @@ textarea.text-input {
     position: sticky; /* Makes it stick when scrolling */
     top: 30px; /* Distance from top of viewport */
     height: fit-content; /* Fit content, but allows scrolling if content is too long */
+    animation: fadeIn 0.8s 0.2s forwards; /* Delayed fade-in */
 }
 
 .news-panel-title {
     font-family: var(--font-family-title);
-    font-size: 1.5rem;
+    font-size: 1.6rem; /* Slightly larger */
     font-weight: 700;
     color: var(--color-border-accent-gold);
-    margin-bottom: 15px;
+    margin-bottom: 18px; /* More space */
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px; /* More space */
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding-bottom: 15px;
+    letter-spacing: 0.6px;
+    padding-bottom: 18px;
     border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .news-content {
-    max-height: calc(90vh - 120px); /* Adjust based on panel height and padding */
-    padding-right: 10px; /* For scrollbar */
+    max-height: calc(90vh - 150px); /* Adjusted based on panel height and padding */
+    padding-right: 15px; /* For scrollbar */
 }
 
 .news-item {
     background: var(--color-bg-tertiary);
     border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-sm);
-    padding: 12px;
-    margin-bottom: 10px;
+    border-radius: var(--radius-md);
+    padding: 15px; /* Larger padding */
+    margin-bottom: 12px; /* More space */
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .news-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    transform: translateY(-3px); /* More pronounced lift */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); /* Deeper shadow */
+}
+.news-item:last-child {
+    margin-bottom: 0;
 }
 
 .news-source {
-    font-size: 0.8rem;
+    font-size: 0.85rem; /* Slightly larger */
     font-weight: 600;
     color: var(--color-text-dark);
     margin-bottom: 5px;
     display: block;
 }
 .news-headline {
-    font-size: 0.9rem;
+    font-size: 0.95rem; /* Slightly larger */
     color: var(--color-text-light);
     line-height: 1.4;
 }
@@ -1043,7 +1089,7 @@ textarea.text-input {
         font-size: 0.75rem;
         padding: 6px 10px;
     }
-    .btn-clear-all {
+    .btn-clear-all, .btn-about {
         width: 40px;
         height: 40px;
         font-size: 1.1rem;

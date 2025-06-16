@@ -67,18 +67,30 @@
     80% { background-color: rgba(212, 175, 55, 0.08); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
     100% { background-color: transparent; box-shadow: none; }
 }
+.analysis-conclusion.highlight {
+    animation: resultHighlight 1.5s ease-out; /* Apply this animation */
+}
 
 /* Stock Ticker Animation */
 @keyframes tickerScroll {
     0% { transform: translateX(0%); }
-    100% { transform: translateX(-50%); } /* Scrolls exactly half the content width for seamless loop */
+    100% { transform: translateX(-50%); } /* Half the content width for seamless loop */
 }
 
+/* Pulse animation for recurring pivot levels */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
 
-/* --- Global Styles --- */
+/* --- Global Base Styles --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    margin: 0; /* Ensures no default margin around the body */
-    padding: 0; /* Ensures no default padding around the body */
     font-family: var(--font-family-body);
     color: var(--color-text-light);
     min-height: 100vh;
@@ -91,6 +103,10 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden; /* Prevents horizontal scrollbar due to ticker animation */
+}
+/* Ensure padding for body only applies to app pages, not home */
+body:not(.home-page) {
+    padding: 30px; /* Padding around the entire main grid layout */
 }
 
 /* --- Stock Ticker Styling --- */
@@ -117,7 +133,7 @@ body {
 
 .ticker-item {
     padding: 0 25px; /* Spacing between individual ticker items */
-    display: inline-block; /* Allows items to sit side-by-side */
+    display: inline-block;
     color: var(--color-text-light);
     font-weight: 600;
 }
@@ -135,7 +151,7 @@ body {
     max-width: 1600px; /* Max width of the entire application layout */
     min-height: calc(100vh - 40px); /* Adjusts height to account for the ticker at the top */
     align-items: flex-start; /* Aligns content to the top within the grid */
-    padding: 30px; /* Padding around the entire main grid layout */
+    flex-grow: 1; /* Allows it to take remaining vertical space */
 }
 
 /* --- Main App Container (Left Column, holds core analyzer sections) --- */
@@ -278,14 +294,84 @@ body {
     box-shadow: 0 0 18px rgba(231, 76, 60, 0.4); /* Red glow */
 }
 
-/* --- Main Content Grid (Grid for the four main sections) --- */
+/* --- Tool Navigation Bar (to switch between Analyzer and Pivot Calculator) --- */
+.tool-navigation {
+    width: 100%; /* Spans across all columns in the header grid */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 25px; /* Spacing below header elements */
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border-subtle);
+    box-shadow: var(--shadow-inner);
+    padding: 8px;
+}
+
+.nav-button {
+    flex: 1; /* Distributes space evenly */
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    border: none;
+    color: var(--color-text-medium);
+    font-family: var(--font-family-body);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.nav-button:hover {
+    color: var(--color-text-light);
+    background: rgba(var(--color-bg-light), 0.2);
+}
+.nav-button.active {
+    background: linear-gradient(135deg, var(--color-accent-blue), #2A7BB1);
+    color: white;
+    box-shadow: var(--shadow-subtle);
+    transform: translateY(-1px);
+}
+.nav-button.active:hover {
+    transform: translateY(-1px);
+}
+
+
+/* --- Main Content Area (Dynamically displays active tool section) --- */
+.main-content-area {
+    grid-column: 1 / -1; /* Spans across all columns of the app-container grid */
+    position: relative; /* Allows tool sections to be positioned absolutely within */
+    /* No height here, content of active tool dictates height */
+}
+
+/* Common style for tool sections (Flow Analyzer or Pivot Calculator) */
+.tool-section {
+    position: absolute; /* Allows sections to overlay each other for switching */
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+    pointer-events: none; /* Prevents interaction when hidden */
+    transition: opacity 0.4s ease-out; /* Smooth fade in/out */
+}
+.tool-section.active {
+    opacity: 1;
+    pointer-events: auto; /* Allows interaction when active */
+    position: relative; /* Takes up space in the flow when active */
+}
+
+/* --- Main Content Grid (Grid for the four main sections within Analyzer) --- */
+/* This grid applies specifically to the QuantumFlow Analyzer's content */
 .main-content-grid {
     display: grid;
     grid-template-columns: 1fr 1fr; /* Two equal columns */
     gap: 30px; /* Space between grid items */
+    /* This grid acts as a container for the Flow Analyzer's specific layout */
 }
 
-/* --- General Section Card Styling --- */
+/* --- General Section Card Styling (Applies to both tools' cards) --- */
 .section-card {
     background: var(--color-bg-secondary);
     border: 1px solid var(--color-border-card);
@@ -334,7 +420,7 @@ body {
     margin-top: 0; /* Removes top margin for the first subsection title */
 }
 
-/* --- Input Fields and Controls (for Buy/Sell flow) --- */
+/* --- Input Fields and Controls (for Buy/Sell flow & Pivot Calculator inputs) --- */
 .input-grid {
     display: grid;
     grid-template-columns: 1fr 1fr; /* Two columns for Buy and Sell inputs */
@@ -395,7 +481,42 @@ body {
     -moz-appearance: textfield;
 }
 
-/* Styling for +/- control buttons */
+/* Style for text-based inputs (used in Pivot Calculator inputs, search, notes) */
+.text-input {
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm); /* Slightly smaller radius for consistency */
+    padding: 12px 18px;
+    color: var(--color-text-light);
+    font-size: 1rem;
+    font-family: var(--font-family-body);
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+    width: 100%; /* Ensures inputs take full available width */
+}
+.text-input::placeholder {
+    color: var(--color-text-placeholder);
+}
+.text-input:focus {
+    outline: none;
+    border-color: var(--color-accent-blue);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+}
+textarea.text-input {
+    resize: vertical; /* Allows vertical resizing */
+    min-height: 90px;
+}
+
+/* Style for search bar with an embedded icon */
+.search-input {
+    padding-left: 45px; /* Creates space for the icon */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="%236A8095"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L461.7 461.7c4.7 4.7 4.7 12.3 0 17s-12.3 4.7-17 0L359.3 376c-34.4 25.1-76.8 40-122.7 40C100.3 416 0 315.7 0 181.7S100.3 0 233.7 0 416 100.3 416 208zM233.7 352c-70.7 0-128-57.3-128-128s57.3-128 128-128 128 57.3 128 128-57.3 128-128 128z"/></svg>'); /* SVG of a search icon */
+    background-repeat: no-repeat;
+    background-position: 15px center; /* Positions the icon */
+    background-size: 22px 22px; /* Sizes the icon */
+}
+
+
+/* --- Specific Button Styling (Control buttons for +/-) --- */
 .btn-control {
     width: 70px;
     height: 55px;
@@ -418,11 +539,11 @@ body {
     transform: translateY(0);
     box-shadow: var(--shadow-inner);
 }
-.btn-increment { background: linear-gradient(135deg, var(--color-accent-green), #24A25C); } /* Green gradient for increment */
-.btn-deduct { background: linear-gradient(135deg, var(--color-accent-red), #B83C30); } /* Red gradient for deduct */
+.btn-increment { background: linear-gradient(135deg, var(--color-accent-green), #24A25C); }
+.btn-deduct { background: linear-gradient(135deg, var(--color-accent-red), #B83C30); }
 
 
-/* --- General Button Styling (for Submit, Reset, Undo) --- */
+/* --- General Button Styling (Applies to both tools' main buttons) --- */
 .btn {
     padding: 14px 25px;
     border-radius: var(--radius-md);
@@ -449,7 +570,7 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--color-accent-blue), #2A7BB1); /* Blue gradient */
+    background: linear-gradient(135deg, var(--color-accent-blue), #2A7BB1);
     color: white;
 }
 .btn-secondary {
@@ -461,12 +582,12 @@ body {
     border-color: var(--color-border-accent-gold);
     color: var(--color-text-light);
 }
-.btn-info { /* Undo button color */
-    background: linear-gradient(135deg, var(--color-accent-info), #7B389D); /* Purple gradient */
+.btn-info { /* Undo button color in Flow Analyzer */
+    background: linear-gradient(135deg, var(--color-accent-info), #7B389D);
     color: white;
 }
 
-/* Grid for action buttons */
+/* Grid for action buttons (Submit, Reset, Undo) */
 .button-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -474,7 +595,7 @@ body {
     margin-bottom: 35px;
 }
 
-/* --- Pending Selections Display --- */
+/* --- Pending Selections Display (Flow Analyzer specific) --- */
 .pending-selections {
     display: flex;
     justify-content: space-around;
@@ -488,7 +609,7 @@ body {
 
 .selection-item {
     text-align: center;
-    flex: 1; /* Distributes space equally */
+    flex: 1;
 }
 
 .selection-value {
@@ -509,7 +630,7 @@ body {
     font-weight: 600;
 }
 
-/* --- Market Sentiment Analysis Section --- */
+/* --- Market Sentiment Analysis Section (Flow Analyzer specific) --- */
 .analysis-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -548,9 +669,8 @@ body {
     text-align: center;
     padding-top: 30px;
     border-top: 1px solid var(--color-border-subtle);
-    /* Animation applied here */
 }
-/* Class added by JS to trigger animation */
+/* Class added by JS to trigger animation for analysis updates */
 .analysis-conclusion.highlight {
     animation: resultHighlight 1.5s ease-out forwards;
 }
@@ -578,7 +698,7 @@ body {
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* Specific colors for sentiment badges */
+/* Specific colors for sentiment badges (based on analysis conclusion) */
 .sentiment-badge.strong-buy { background: var(--color-accent-green); color: white; border-color: #24A25C; }
 .sentiment-badge.strong-sell { background: var(--color-accent-red); color: white; border-color: #B83C30; }
 .sentiment-badge.buy-retracement { background: var(--color-accent-yellow); color: var(--color-bg-darkest); border-color: #D3A70D; }
@@ -589,8 +709,9 @@ body {
 .sentiment-badge.no-signal { background: var(--color-bg-tertiary); color: var(--color-text-dark); border-color: var(--color-border-subtle); }
 
 
-/* --- Scrollable Content Containers (History, Journal, News) --- */
-.history-list, .history-detail-list, .journal-list, .news-content {
+/* --- Scrollable Content Containers (History, Journal, News, Pivot Results) --- */
+.history-list, .history-detail-list, .journal-list, .news-content,
+.pivot-level-grid.scrollable-grid, #individual-results.scrollable-content {
     max-height: 300px; /* Max height before content scrolls */
     overflow-y: auto; /* Enables vertical scrolling */
     padding-right: 18px; /* Space for the custom scrollbar */
@@ -616,7 +737,7 @@ body {
 }
 
 
-/* --- History Item Styling (for Recent Flows and Detailed Notes) --- */
+/* --- History & Journal Item Styling --- */
 .history-item, .journal-item {
     background: var(--color-bg-tertiary);
     border: 1px solid var(--color-border-subtle);
@@ -767,7 +888,7 @@ body {
 }
 
 
-/* --- Parameter Management Styling --- */
+/* --- Custom Parameter Management Styling --- */
 .parameter-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
@@ -845,96 +966,6 @@ body {
     border-top: 1px solid var(--color-border-subtle);
 }
 
-/* --- Generic Text Input Styles (for Notes, Journal forms, search bar) --- */
-.text-input {
-    background: var(--color-bg-tertiary);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-sm);
-    padding: 12px 18px;
-    color: var(--color-text-light);
-    font-size: 1rem;
-    font-family: var(--font-family-body);
-    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
-    width: 100%; /* Ensures inputs take full available width */
-}
-.text-input::placeholder {
-    color: var(--color-text-placeholder);
-}
-.text-input:focus {
-    outline: none;
-    border-color: var(--color-accent-blue);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
-}
-textarea.text-input {
-    resize: vertical; /* Allows vertical resizing */
-    min-height: 90px;
-}
-
-/* Styling for the search bar, with an embedded icon */
-.search-input {
-    padding-left: 45px; /* Creates space for the icon */
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="%236A8095"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L461.7 461.7c4.7 4.7 4.7 12.3 0 17s-12.3 4.7-17 0L359.3 376c-34.4 25.1-76.8 40-122.7 40C100.3 416 0 315.7 0 181.7S100.3 0 233.7 0 416 100.3 416 208zM233.7 352c-70.7 0-128-57.3-128-128s57.3-128 128-128 128 57.3 128 128-57.3 128-128 128z"/></svg>'); /* SVG of a search icon */
-    background-repeat: no-repeat;
-    background-position: 15px center; /* Positions the icon */
-    background-size: 22px 22px; /* Sizes the icon */
-}
-
-/* --- Collapsible Panel Styling (for Notes, Parameters, Journal) --- */
-.collapsible-panel-container {
-    grid-column: span 2; /* Makes this section span both columns in the main grid */
-}
-
-/* Header of the collapsible panel, acts as the toggle button */
-.collapsible-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    background: var(--color-bg-secondary);
-    padding: 20px 30px;
-    margin: -30px; /* Pulls the header to cover the section-card's padding */
-    margin-bottom: 30px; /* Spacing after the header */
-    border-bottom: 1px solid var(--color-border-subtle);
-    transition: background-color var(--transition-speed);
-}
-.collapsible-header:hover {
-    background-color: var(--color-bg-light); /* Darker background on hover */
-}
-
-/* Ensures the section title within the header has no extra margin */
-.collapsible-header .section-title {
-    margin-bottom: 0;
-}
-
-/* Styling for the chevron icon (rotated to indicate state) */
-.toggle-icon {
-    font-size: 1.8rem;
-    color: var(--color-border-accent-gold);
-    transition: transform var(--transition-speed);
-}
-/* Default state for icon (pointing down) */
-.collapsible-content.collapsed + .collapsible-header .toggle-icon {
-    transform: rotate(0deg);
-}
-/* Rotated state for icon (pointing up when active/expanded) */
-.collapsible-content:not(.collapsed) + .collapsible-header .toggle-icon {
-    transform: rotate(180deg);
-}
-
-/* Content area that collapses/expands */
-.collapsible-content {
-    max-height: 0; /* Hidden when collapsed */
-    opacity: 0; /* Fades out when collapsed */
-    overflow: hidden; /* Hides content overflow when collapsed */
-    transition: max-height 0.6s ease-out, opacity 0.6s ease-out; /* Smooth collapse/expand transition */
-}
-/* State when content is expanded/active */
-.collapsible-content.active {
-    max-height: 2000px; /* A large value to accommodate all content */
-    opacity: 1;
-    overflow: visible; /* Allows inner scrollable areas to work */
-}
-
 /* --- News/Market Insights Panel (Right Column) --- */
 .news-panel {
     background: var(--color-bg-secondary);
@@ -1010,6 +1041,158 @@ textarea.text-input {
     margin-top: 20px;
 }
 
+/* --- Pivot Calculator Specific Styles --- */
+/* Overall grid for Pivot Calculator sections */
+.pivot-calculator-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns like the analyzer */
+    gap: 30px;
+}
+/* Ensure the recurring controls and results sections span across if needed */
+.pivot-calculator-grid > .section-card:nth-child(3), /* Recurring Levels Control */
+.pivot-calculator-grid > .section-card:nth-child(4), /* Individual Results */
+.pivot-calculator-grid > .section-card:nth-child(5) { /* Recurring Levels Display */
+    grid-column: span 2;
+}
+
+/* Formula selection grid */
+.formula-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Formulas in responsive grid */
+    gap: 16px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/* Individual formula card style */
+.formula-card {
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    padding: 18px;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+    box-shadow: var(--shadow-subtle);
+}
+.formula-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+    border-color: var(--color-accent-blue);
+}
+.formula-card.selected {
+    border-color: var(--color-accent-blue);
+    background: rgba(52, 152, 219, 0.1); /* Light blue background when selected */
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3), var(--shadow-medium);
+}
+
+.formula-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text-light);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.formula-description {
+    font-size: 0.85rem;
+    color: var(--color-text-medium);
+    line-height: 1.4;
+    text-transform: none; /* Description should not be uppercase */
+}
+
+/* Pivot Calculator level display grid (for individual and recurring results) */
+.pivot-level-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/* Individual level item within the pivot calculator results */
+.level-item {
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    text-align: center;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-inner);
+    cursor: pointer;
+}
+.level-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-subtle);
+    border-color: var(--color-border-accent-bronze);
+}
+.level-item.recurring { /* Style for recurring levels */
+    border: 2px solid var(--color-accent-yellow); /* Highlight with yellow border */
+    background: rgba(241, 196, 15, 0.1); /* Subtle yellow background */
+    box-shadow: 0 0 10px rgba(241, 196, 15, 0.4); /* Yellow glow */
+    animation: pulse 2s infinite; /* Pulsing animation for recurring levels */
+}
+
+/* Specific colors for level types */
+.level-item.pivot { border-color: var(--color-accent-blue); background: rgba(52, 152, 219, 0.05); }
+.level-item.resistance { border-color: var(--color-accent-green); background: rgba(46, 204, 113, 0.05); }
+.level-item.support { border-color: var(--color-accent-red); background: rgba(231, 76, 60, 0.05); }
+
+.level-label {
+    font-size: 0.85rem;
+    color: var(--color-text-medium);
+    margin-bottom: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.level-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-light);
+    font-family: var(--font-family-mono);
+    font-variant-numeric: tabular-nums; /* Aligns numbers vertically */
+}
+
+/* Slider styling */
+.slider-container {
+    margin: 16px 0;
+}
+.slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--color-bg-tertiary);
+    outline: none;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+    -webkit-appearance: none; /* For Webkit browsers */
+    appearance: none;
+}
+.slider:hover {
+    opacity: 1;
+}
+/* Thumb styling for Webkit browsers */
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color-accent-blue);
+    cursor: grab;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    border: 2px solid var(--color-bg-secondary); /* Added for visual depth */
+}
+/* Thumb styling for Mozilla Firefox */
+.slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color-accent-blue);
+    cursor: grab;
+    border: none; /* Override default border */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
 /* --- Utility Color Classes (for text) --- */
 .text-accent-green { color: var(--color-accent-green); }
 .text-accent-red { color: var(--color-accent-red); }
@@ -1028,6 +1211,7 @@ textarea.text-input {
         grid-template-columns: 1fr; /* Single column layout */
         gap: 25px;
         max-width: 900px; /* Constrain max width for readability */
+        padding: 20px; /* Reduce global padding */
     }
     .news-panel {
         position: relative; /* No longer sticky when stacked */
@@ -1040,13 +1224,14 @@ textarea.text-input {
     }
 }
 
-/* For screens smaller than 1024px, stack the top sections of the main app */
+/* For screens smaller than 1024px, stack the main content sections */
 @media (max-width: 1024px) {
-    .main-content-grid {
+    .main-content-grid, .pivot-calculator-grid {
         grid-template-columns: 1fr; /* All sections stack vertically */
     }
-    .collapsible-panel-container {
-        grid-column: span 1; /* Adjusts the span for single column */
+    /* Ensure collapsible panel and pivot-calculator sections still span full width */
+    .collapsible-panel-container, #pivot-calculator-section {
+        grid-column: span 1;
     }
     .header-right {
         flex-direction: column;
@@ -1057,12 +1242,15 @@ textarea.text-input {
         width: 100%;
         justify-content: space-between;
     }
+    .tool-navigation {
+        margin-top: 15px; /* Adjust spacing */
+    }
 }
 
 /* For screens smaller than 768px (tablets and large phones) */
 @media (max-width: 768px) {
     body {
-        padding: 20px;
+        padding: 15px;
     }
     .stock-ticker-wrapper {
         padding: 6px 0;
@@ -1071,21 +1259,33 @@ textarea.text-input {
     .stock-ticker-content {
         animation-duration: 30s; /* Faster scroll on smaller screens */
     }
-    .stock-ticker-content .ticker-item {
+    .ticker-item {
         padding: 0 15px;
     }
     .app-wrapper {
-        padding: 20px;
+        padding: 15px;
     }
     .app-container {
         padding: 20px;
         border-radius: 18px;
     }
     .app-title {
-        font-size: 2.8rem;
+        font-size: 2.2rem;
+    }
+    .app-subtitle {
+        font-size: 0.8rem;
+    }
+    .live-clock, .time-info {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+    }
+    .btn-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.2rem;
     }
     .section-title {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
         margin-bottom: 20px;
     }
     .subsection-title {
@@ -1106,8 +1306,8 @@ textarea.text-input {
         grid-template-columns: 1fr 1fr; /* Analysis items remain 2 per row */
         gap: 15px;
     }
-    .value-input {
-        font-size: 1.1rem;
+    .value-input, .text-input {
+        font-size: 1rem;
         padding: 8px 12px;
     }
     .btn-control {
@@ -1119,54 +1319,61 @@ textarea.text-input {
         padding: 10px 18px;
         font-size: 0.9rem;
     }
-    .selection-value, .analysis-value, .parameter-value {
-        font-size: 2.2rem;
+    .selection-value, .analysis-value, .level-value, .parameter-value {
+        font-size: 2rem; /* Reduced font size for values */
     }
     .conclusion-text {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
     }
     .sentiment-badge {
         font-size: 0.85rem;
         padding: 10px 20px;
     }
-    .history-list, .history-detail-list, .journal-list, .news-content {
-        max-height: 200px; /* Reduced max height for smaller screens */
+    .history-list, .history-detail-list, .journal-list, .news-content, .pivot-level-grid, #individual-results {
+        max-height: 180px; /* Reduced max height for smaller screens */
         padding-right: 10px;
     }
     .news-panel {
         padding: 20px;
     }
     .news-panel-title {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
     }
     .news-item {
         padding: 10px;
     }
     .news-headline {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
+    }
+    .formula-grid {
+        grid-template-columns: 1fr; /* Formulas stack vertically */
+    }
+    .pivot-level-grid {
+        grid-template-columns: 1fr; /* Pivot levels stack vertically */
     }
 }
 
 /* For very small screens (phones) */
 @media (max-width: 480px) {
     body {
-        padding: 15px;
+        padding: 10px;
     }
     .app-container {
-        padding: 15px;
+        padding: 10px;
         border-radius: 15px;
     }
     .app-title {
-        font-size: 2.2rem;
+        font-size: 1.8rem;
     }
     .app-subtitle {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
     }
     .live-clock, .time-info {
-        font-size: 0.75rem;
-        padding: 6px 10px;
+        font-size: 0.7rem;
+        padding: 5px 8px;
+        gap: 10px;
     }
-    .btn-clear-all, .btn-about {
+    .btn-icon {
         width: 40px;
         height: 40px;
         font-size: 1.1rem;
@@ -1174,32 +1381,39 @@ textarea.text-input {
     .section-title {
         font-size: 1.3rem;
         margin-bottom: 15px;
+        gap: 10px;
     }
     .subsection-title {
-        font-size: 1rem;
+        font-size: 0.95rem;
+        margin-top: 15px;
+        margin-bottom: 10px;
+        gap: 8px;
     }
-    .selection-value, .analysis-value, .parameter-value {
-        font-size: 2rem;
+    .selection-value, .analysis-value, .level-value, .parameter-value {
+        font-size: 1.8rem;
     }
     .conclusion-text {
-        font-size: 1.6rem;
+        font-size: 1.4rem;
     }
     .sentiment-badge {
-        font-size: 0.75rem;
-        padding: 8px 15px;
+        font-size: 0.7rem;
+        padding: 6px 12px;
     }
     .text-input, textarea.text-input {
-        font-size: 0.9rem;
-        padding: 8px 12px;
+        font-size: 0.85rem;
+        padding: 6px 10px;
     }
     .search-input {
-        padding-left: 35px;
-        background-size: 18px 18px;
+        padding-left: 30px;
+        background-size: 16px 16px;
+        background-position: 10px center;
     }
     .parameter-add {
-        grid-template-columns: 1fr; /* Stacks parameter add inputs/button vertically */
+        gap: 10px;
+        padding-top: 15px;
     }
     .journal-entry-price-pnl {
-        grid-template-columns: 1fr; /* Stacks price/PNL info vertically */
+        grid-template-columns: 1fr; /* Stack prices/PNL vertically */
+        gap: 8px;
     }
 }

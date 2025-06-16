@@ -120,8 +120,11 @@ function initializeApp() {
 }
 
 function loadStateFromLocalStorage() {
-    buyCount = parseFloat(localStorage.getItem(STORAGE_KEYS.BUY_COUNT)) || 0;
-    sellCount = parseFloat(localStorage.getItem(STORAGE_KEYS.SELL_COUNT)) || 0;
+    const storedBuyCount = localStorage.getItem(STORAGE_KEYS.BUY_COUNT);
+    const storedSellCount = localStorage.getItem(STORAGE_KEYS.SELL_COUNT);
+
+    buyCount = storedBuyCount ? parseFloat(storedBuyCount) : 0;
+    sellCount = storedSellCount ? parseFloat(storedSellCount) : 0;
     historyList = JSON.parse(localStorage.getItem(STORAGE_KEYS.HISTORY_LIST)) || [];
     historyWithNotes = JSON.parse(localStorage.getItem(STORAGE_KEYS.HISTORY_WITH_NOTES)) || [];
     journalEntries = JSON.parse(localStorage.getItem(STORAGE_KEYS.JOURNAL_ENTRIES)) || [];
@@ -513,7 +516,7 @@ function saveTrade() {
     const entryPrice = parseFloat(DOMElements.tradeEntryPriceInput.value);
     const exitPrice = parseFloat(DOMElements.tradeExitPriceInput.value);
     const pnl = parseFloat(DOMElements.tradePnlInput.value);
-    const date = DOMElements.tradeDateInput.value; // YYYY-MM-DD
+    const date = DOMElements.tradeDateInput.value; // формате YYYY-MM-DD
     const notes = DOMElements.tradeNotesInput.value.trim();
 
     if (!instrument || !date) {
@@ -606,7 +609,7 @@ function setupEventListeners() {
     });
 
     // Note Search
-    DOMEElements.noteSearchInput.addEventListener('input', (e) => updateHistoryWithNotesDisplay(e.target.value));
+    DOMElements.noteSearchInput.addEventListener('input', (e) => updateHistoryWithNotesDisplay(e.target.value));
 
     // Parameter addition
     DOMElements.addParameterBtn.addEventListener('click', addParameter);
@@ -618,12 +621,14 @@ function setupEventListeners() {
 
     // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
+        // Only trigger shortcuts if not typing in an input field (except for Escape)
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
             if (e.key === 'Escape' && DOMElements.notesParamsContent.classList.contains('active')) {
+                // Allow escape to close collapsible if active and user is in an input
                 DOMElements.notesParamsContent.classList.remove('active');
                 e.target.blur(); // Remove focus from input
             }
-            return; // Don't trigger other shortcuts if typing in an input field
+            return;
         }
 
         if (e.key === 'Enter') {
@@ -665,7 +670,9 @@ function updateClocks() {
 
     // Specific Timezones
     TIMEZONE_CITIES.forEach(tz => {
-        const element = document.getElementById(`${tz.label.toLowerCase().replace(/[^a-z0-9]/g, '')}-time`);
+        // Construct the ID based on the label, converting it to lowercase and removing non-alphanumeric
+        const elementId = `${tz.label.toLowerCase().replace(/[^a-z0-9]/g, '')}-time`;
+        const element = document.getElementById(elementId);
         if (element) {
             element.innerText = now.toLocaleTimeString('en-US', { timeZone: tz.timezone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
         }
